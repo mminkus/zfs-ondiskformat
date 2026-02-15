@@ -23,6 +23,9 @@ The documentation is organized into chapters covering each layer of the ZFS on-d
 - [Chapter 6: ZFS POSIX Layer](docs/06-zpl.md)
 - [Chapter 7: ZFS Intent Log](docs/07-zil.md)
 - [Chapter 8: ZVOL](docs/08-zvol.md)
+- [Chapter 9: Space Maps and Metaslabs](docs/09-space-maps.md)
+- [Chapter 10: Native Encryption](docs/10-encryption.md)
+- [Chapter 11: RAID-Z and dRAID](docs/11-raidz.md)
 
 ## Status
 
