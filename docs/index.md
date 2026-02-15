@@ -34,7 +34,7 @@ graph TD
 
 | Layer | Purpose | Chapters |
 |-------|---------|----------|
-| **SPA** (Storage Pool Allocator) | Manages vdevs, labels, uberblocks, block allocation, and I/O | [Chapter 1](01-vdevs.md), [Chapter 2](02-block-pointers.md), [Chapter 9](09-space-maps.md), [Chapter 11](11-raidz.md) |
+| **SPA** (Storage Pool Allocator) | Manages vdevs, labels, uberblocks, block allocation, and I/O | [Chapter 1](01-vdevs.md), [Chapter 2](02-block-pointers.md), [Chapter 9](09-space-maps.md), [Chapter 11](11-raidz.md), [Chapter 12](12-special-vdevs.md) |
 | **DMU** (Data Management Unit) | Groups blocks into objects and object sets | [Chapter 3](03-dmu.md) |
 | **DSL** (Dataset and Snapshot Layer) | Manages datasets, snapshots, clones, and their relationships | [Chapter 4](04-dsl.md) |
 | **ZAP** (ZFS Attribute Processor) | Stores name-value pair attributes in objects | [Chapter 5](05-zap.md) |
@@ -85,3 +85,4 @@ All source references in this documentation point to files in the OpenZFS source
 - [Chapter 9: Space Maps and Metaslabs](09-space-maps.md)
 - [Chapter 10: Native Encryption](10-encryption.md)
 - [Chapter 11: RAID-Z and dRAID](11-raidz.md)
+- [Chapter 12: Allocation Classes and Device Removal](12-special-vdevs.md)

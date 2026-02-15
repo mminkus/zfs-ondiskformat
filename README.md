@@ -26,6 +26,7 @@ The documentation is organized into chapters covering each layer of the ZFS on-d
 - [Chapter 9: Space Maps and Metaslabs](docs/09-space-maps.md)
 - [Chapter 10: Native Encryption](docs/10-encryption.md)
 - [Chapter 11: RAID-Z and dRAID](docs/11-raidz.md)
+- [Chapter 12: Allocation Classes and Device Removal](docs/12-special-vdevs.md)
 
 ## Status
 
