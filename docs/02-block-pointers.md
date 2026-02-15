@@ -56,7 +56,7 @@ Word   64      56      48      40      32      24      16      8       0
 | **B** | 1 | Byte order (0=big-endian, 1=little-endian) |
 | **D** | 1 | Dedup indicator |
 | **X** | 1 | Encryption indicator |
-| **lvl** | 7 | Indirection level |
+| **lvl** | 5 | Indirection level |
 | **type** | 8 | DMU object type (see [glossary](glossary.md#dmu-object-types)) |
 | **cksum** | 8 | Checksum algorithm (see [glossary](glossary.md#checksum-algorithms)) |
 | **E** | 1 | Embedded data indicator |
@@ -153,6 +153,10 @@ All three are stored as the number of 512-byte sectors **minus one**. To get the
 
 When compression is off and no RAID-Z or gang overhead applies, LSIZE = PSIZE = ASIZE.
 
+### Large Blocks (`feature@large_blocks`)
+
+The LSIZE and PSIZE fields are each 16 bits wide, encoding sizes up to 32 MB (`2^16 * 512 bytes`). The original ZFS format limited record sizes to 128 KB, but modern OpenZFS supports blocks up to 16 MB when the `org.open-zfs:large_blocks` feature is enabled. The encoding did not change -- larger values in the same 16-bit fields simply became valid.
+
 ## 2.7 Endianness
 
 The **B** (byteorder) bit indicates the byte order in which the block's data was written:
@@ -187,6 +191,160 @@ The `fill` field (word b) counts the number of non-zero block pointers beneath t
 
 The birth transaction is used for incremental operations such as `zfs send` -- only blocks born after a given txg need to be included.
 
-## 2.12 Padding
+## 2.12 Dedup
 
-Words 7-8 contain padding reserved for future use. Bit 63 of word 7 is the **R** (rewrite) flag indicating the block was reallocated at the physical birth txg.
+The **D** (dedup) bit (bit 62 of word 6) indicates that this block is deduplicated. When set, the block's checksum serves as a lookup key into the **Dedup Table** (DDT), allowing multiple block pointers to reference the same physical data without storing duplicate copies.
+
+Dedup was added in pool version 21. See [glossary](glossary.md#pool-versions) for pool version details.
+
+## 2.13 Rewrite
+
+The **R** (rewrite) bit (bit 63 of word 7) indicates that a block was physically rewritten (reallocated) without changing its logical contents. This preserves the original logical birth txg while recording a new physical birth txg, which is important for incremental `zfs send` correctness.
+
+Added by `feature@physical_rewrite` (`com.truenas:physical_rewrite`).
+
+## 2.14 Padding
+
+Words 7-8 (except for the R bit in word 7) contain padding reserved for future use.
+
+## 2.15 Embedded Block Pointers
+
+> **Source:** `include/sys/spa.h`, `module/zfs/blkptr.c`
+
+When the **E** (embedded) bit is set (bit 39 of word 6), the block pointer does not point to an on-disk block. Instead, it stores up to **112 bytes of payload data** inline within the 128-byte block pointer structure itself. This is used for very small blocks that compress to 112 bytes or less, eliminating the need for a separate disk allocation.
+
+Added by `feature@embedded_data` (`com.delphix:embedded_data`).
+
+### Embedded Block Pointer Layout
+
+The embedded layout repurposes the DVA, padding, fill count, and checksum fields for payload storage:
+
+```
+Word   64      56      48      40      32      24      16      8       0
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  0    |                         payload                                |
+  1    |                         payload                                |
+  2    |                         payload                                |
+  3    |                         payload                                |
+  4    |                         payload                                |
+  5    |                         payload                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  6    |BDX|lvl| type  | etype |E| comp| PSIZE |         LSIZE         |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  7    |                         payload                                |
+  8    |                         payload                                |
+  9    |                         payload                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  a    |                    logical birth txg                           |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  b    |                         payload                                |
+  c    |                         payload                                |
+  d    |                         payload                                |
+  e    |                         payload                                |
+  f    |                         payload                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+```
+
+14 of the 16 words carry payload data (112 bytes total). Word 6 (blk_prop) and word a (logical birth txg) retain their standard meanings.
+
+### Embedded vs. Standard Block Pointers
+
+| Field | Standard BP | Embedded BP |
+|-------|------------|-------------|
+| **cksum** (bits 40-47) | Checksum algorithm | Embedded type (`etype`) |
+| **LSIZE** (bits 0-24) | Sectors minus one (16 bits) | Bytes (25 bits, no sector encoding) |
+| **PSIZE** (bits 25-31) | Sectors minus one (16 bits) | Bytes (7 bits, no sector encoding) |
+| DVAs, fill, checksum | Present | Replaced by payload |
+| Physical birth txg | Present | Absent |
+
+### Embedded Types (`etype`)
+
+| Value | Constant | Description |
+|-------|----------|-------------|
+| 0 | `BP_EMBEDDED_TYPE_DATA` | Regular embedded data |
+| 1 | `BP_EMBEDDED_TYPE_RESERVED` | Reserved |
+| 2 | `BP_EMBEDDED_TYPE_REDACTED` | Redacted block marker (see below) |
+
+### Redacted Block Pointers
+
+A **redacted block pointer** is an embedded block pointer with `etype` set to `BP_EMBEDDED_TYPE_REDACTED`. It marks a block whose data was intentionally excluded from a redacted `zfs send` stream. The receiving side stores this marker so it knows the data is missing and cannot be read.
+
+Added by `feature@redacted_datasets` (`com.delphix:redacted_datasets`).
+
+## 2.16 Encrypted Block Pointers
+
+> **Source:** `include/sys/spa.h`, `include/sys/zio_crypt.h`
+
+When the **X** (crypt) bit is set (bit 61 of word 6), the block pointer stores encryption metadata alongside the block location. The X bit has three interpretations depending on context:
+
+| Condition | Interpretation |
+|-----------|---------------|
+| X=1, level 0, encrypted object type | **Encrypted**: data is encrypted and authenticated |
+| X=1, level 0, non-encrypted object type | **Authenticated**: data is authenticated (MAC) but not encrypted |
+| X=1, level > 0 | **Indirect MAC**: checksum covers MACs of child blocks |
+
+Added by `feature@encryption` (`com.datto:encryption`).
+
+### Encrypted Block Pointer Layout
+
+Encrypted block pointers sacrifice DVA[2] (the third copy) and half the checksum space to store cryptographic metadata:
+
+```
+Word   64      56      48      40      32      24      16      8       0
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  0    |  pad  |         vdev1          | pad   |       ASIZE           |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  1    |G|                       offset1                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  2    |  pad  |         vdev2          | pad   |       ASIZE           |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  3    |G|                       offset2                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  4    |                          salt (64 bits)                        |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  5    |                     IV1 (first 64 bits of IV)                  |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  6    |BDX|lvl| type  | cksum |E| comp|     PSIZE     |    LSIZE      |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  7    |R|                       padding                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  8    |                         padding                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  9    |                    physical birth txg                          |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  a    |                    logical birth txg                           |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  b    |       IV2 (32 bits)            |       fill count (32 bits)    |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  c    |                     checksum[0]                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  d    |                     checksum[1]                                |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  e    |                       MAC[0]                                   |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+  f    |                       MAC[1]                                   |
+       +-------+-------+-------+-------+-------+-------+-------+-------+
+```
+
+### Encrypted vs. Standard Block Pointers
+
+| Field | Standard BP | Encrypted BP |
+|-------|------------|--------------|
+| DVA[2] (words 4-5) | Third block copy | Salt (64 bits) + IV1 (64 bits) |
+| Fill count (word b) | 64 bits | IV2 (upper 32 bits) + fill count (lower 32 bits) |
+| Checksum (words c-f) | 256-bit checksum | 128-bit checksum (words c-d) + 128-bit MAC (words e-f) |
+
+### Cryptographic Fields
+
+| Field | Size | Description |
+|-------|------|-------------|
+| **Salt** | 8 bytes | Random per-block salt for key derivation |
+| **IV** (IV1 + IV2) | 12 bytes | Initialization vector for AES encryption (96 bits total) |
+| **MAC** | 16 bytes | Message Authentication Code for tamper detection |
+
+### Consequences
+
+- Encrypted blocks support a **maximum of 2 DVAs** (not 3), since DVA[2] stores the salt and IV.
+- The checksum is reduced from 256 bits to 128 bits to make room for the MAC.
+- Embedded block pointers (`E=1`) **cannot** be encrypted (`X=1`); the two are mutually exclusive.
+- The encryption algorithm (AES-128/192/256-CCM or AES-128/192/256-GCM) is stored in the dataset properties, not in the block pointer.
