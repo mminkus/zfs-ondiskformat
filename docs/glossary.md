@@ -55,6 +55,37 @@ These constants identify the type of data stored in a dnode. Values are stored i
 | 22 | `DMU_OT_UNLINKED_SET` | Unlinked (delete queue) set |
 | 23 | `DMU_OT_ZVOL` | ZVOL data |
 | 24 | `DMU_OT_ZVOL_PROP` | ZVOL properties (ZAP) |
+| 25 | `DMU_OT_PLAIN_OTHER` | Other uint8 data (test) |
+| 26 | `DMU_OT_UINT64_OTHER` | Other uint64 data (test) |
+| 27 | `DMU_OT_ZAP_OTHER` | Other ZAP object (test) |
+| 28 | `DMU_OT_ERROR_LOG` | Persistent error log (ZAP) |
+| 29 | `DMU_OT_SPA_HISTORY` | Pool history |
+| 30 | `DMU_OT_SPA_HISTORY_OFFSETS` | Pool history offsets |
+| 31 | `DMU_OT_POOL_PROPS` | Pool properties (ZAP) |
+| 32 | `DMU_OT_DSL_PERMS` | DSL permissions (ZAP) |
+| 33 | `DMU_OT_ACL` | ZFS ACL (v1) |
+| 34 | `DMU_OT_SYSACL` | ZFS system ACL |
+| 35 | `DMU_OT_FUID` | FUID table |
+| 36 | `DMU_OT_FUID_SIZE` | FUID table size |
+| 37 | `DMU_OT_NEXT_CLONES` | Next clones (ZAP) |
+| 38 | `DMU_OT_SCAN_QUEUE` | Scan work queue (ZAP) |
+| 39 | `DMU_OT_USERGROUP_USED` | User/group space used (ZAP) |
+| 40 | `DMU_OT_USERGROUP_QUOTA` | User/group quota (ZAP) |
+| 41 | `DMU_OT_USERREFS` | Snapshot user reference holds (ZAP) |
+| 42 | `DMU_OT_DDT_ZAP` | Dedup table (ZAP) |
+| 43 | `DMU_OT_DDT_STATS` | Dedup statistics (ZAP) |
+| 44 | `DMU_OT_SA` | System attributes |
+| 45 | `DMU_OT_SA_MASTER_NODE` | SA master node (ZAP) |
+| 46 | `DMU_OT_SA_ATTR_REGISTRATION` | SA attribute registration (ZAP) |
+| 47 | `DMU_OT_SA_ATTR_LAYOUTS` | SA attribute layouts (ZAP) |
+| 48 | `DMU_OT_SCAN_XLATE` | Scan translations (ZAP) |
+| 49 | `DMU_OT_DEDUP` | Deduplicated block |
+| 50 | `DMU_OT_DEADLIST` | DSL deadlist map (ZAP) |
+| 51 | `DMU_OT_DEADLIST_HDR` | DSL deadlist header |
+| 52 | `DMU_OT_DSL_CLONES` | DSL directory clones (ZAP) |
+| 53 | `DMU_OT_BPOBJ_SUBOBJ` | Block pointer object subobject |
+
+Values 0x80 and above use the new-type encoding; see [Chapter 3, Section 3.5](03-dmu.md#35-new-type-encoding).
 
 ## Object Set Types
 
