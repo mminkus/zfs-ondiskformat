@@ -100,26 +100,31 @@ Values 0x80 and above use the new-type encoding; see [Chapter 3, Section 3.5](03
 
 | Value | Name | Algorithm | Added |
 |-------|------|-----------|-------|
-| 1 | `on` | fletcher2 (legacy default) | v1 |
+| 0 | `inherit` | Property value resolved at write time | — |
+| 1 | `on` | Property value (defaults to `fletcher4`) | — |
 | 2 | `off` | none | v1 |
-| 3 | `label` | SHA-256 (labels only) | v1 |
-| 4 | `gang_header` | SHA-256 (gang blocks only) | v1 |
-| 5 | `zilog` | fletcher2 (ZIL only) | v1 |
+| 3 | `label` | SHA-256 (labels only, embedded) | v1 |
+| 4 | `gang_header` | SHA-256 (gang header only, embedded) | v1 |
+| 5 | `zilog` | fletcher2 (ZIL only, embedded) | v1 |
 | 6 | `fletcher2` | fletcher2 | v1 |
 | 7 | `fletcher4` | fletcher4 | v1 |
-| 8 | `SHA-256` | SHA-256 | v1 |
-| 9 | `SHA-512/256` | SHA-512 truncated to 256 bits | feature |
-| 10 | `skein` | Skein-512/256 | feature |
-| 11 | `edonr` | Edon-R/256 | feature |
-| 12 | `blake3` | BLAKE3 | feature |
+| 8 | `sha256` | SHA-256 | v1 |
+| 9 | `zilog2` | fletcher4 (ZIL only, embedded) | v1 |
+| 10 | `noparity` | none (RAID-Z parity) | v1 |
+| 11 | `sha512` | SHA-512 | feature |
+| 12 | `skein` | Skein-512/256 | feature |
+| 13 | `edonr` | Edon-R/256 | feature |
+| 14 | `blake3` | BLAKE3 | feature |
 
 ## Compression Algorithms
 
 | Value | Name | Algorithm | Added |
 |-------|------|-----------|-------|
-| 1 | `on` | lzjb (legacy default) | v1 |
+| 0 | `inherit` | Property value resolved at write time | — |
+| 1 | `on` | Property value (defaults to `lz4` if enabled, else `lzjb`) | — |
 | 2 | `off` | none | v1 |
 | 3 | `lzjb` | lzjb | v1 |
+| 4 | `empty` | Special: all‑zero blocks | v1 |
 | 5 | `gzip-1` | GZIP level 1 | v5 |
 | 6 | `gzip-2` | GZIP level 2 | v5 |
 | 7 | `gzip-3` | GZIP level 3 | v5 |
@@ -178,20 +183,20 @@ Values 0x80 and above use the new-type encoding; see [Chapter 3, Section 3.5](03
 
 | Type String | Description |
 |-------------|-------------|
-| `"disk"` | Leaf vdev: block storage device |
-| `"file"` | Leaf vdev: file-backed storage |
+| `"root"` | Root of the vdev tree |
 | `"mirror"` | Interior vdev: mirror (N-way replication) |
 | `"raidz"` | Interior vdev: RAID-Z (parity-based redundancy) |
+| `"draid"` | Interior vdev: distributed-parity RAID |
 | `"replacing"` | Interior vdev: temporary mirror during disk replacement |
-| `"root"` | Interior vdev: root of the vdev tree |
-| `"spare"` | Leaf vdev: hot spare device |
-| `"log"` | Interior vdev: dedicated ZIL log device (SLOG) |
-| `"l2cache"` | Leaf vdev: L2ARC read cache device |
+| `"spare"` | Interior vdev: spare wrapper (contains the actual spare leaf) |
+| `"disk"` | Leaf vdev: block storage device |
+| `"file"` | Leaf vdev: file-backed storage |
+| `"dspare"` | Leaf vdev: distributed spare within a dRAID group |
+| `"indirect"` | Remapped vdev after device removal |
 | `"hole"` | Placeholder for a removed top-level vdev slot |
 | `"missing"` | Placeholder for a device not present at import |
-| `"indirect"` | Remapped vdev after device removal |
-| `"draid"` | Distributed-parity RAID with integrated spares |
-| `"dspare"` | Distributed spare within a dRAID group |
+
+Note: log devices are marked with an `is_log` flag in vdev configs rather than a distinct vdev‑tree type string, and L2ARC/spares are stored in auxiliary config lists, not under `vdev_tree`.
 
 ## Pool Versions
 

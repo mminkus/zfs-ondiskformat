@@ -43,12 +43,10 @@ Modern pools often include additional special-purpose vdev classes alongside the
 
 ```mermaid
 graph TD
-    root["Root vdev"]
+    root["Root vdev<br/>(vdev_tree)"]
     m1["mirror-0<br/>(data)"]
     rz["raidz1-0<br/>(data)"]
-    log["mirror-1<br/>(log)"]
-    cache["L2ARC<br/>(cache)"]
-    spare["spare-0"]
+    log["mirror-1<br/>(log vdev)"]
     a["disk A"]
     b["disk B"]
     c["disk C"]
@@ -56,14 +54,13 @@ graph TD
     e["disk E"]
     slog1["slog1"]
     slog2["slog2"]
-    l2["ssd"]
-    sp["hot spare"]
+    aux["Aux vdev lists"]
+    l2["L2ARC device<br/>(l2cache list)"]
+    sp["hot spare<br/>(spares list)"]
 
     root --- m1
     root --- rz
     root --- log
-    root --- cache
-    root --- spare
     m1 --- a
     m1 --- b
     rz --- c
@@ -71,16 +68,17 @@ graph TD
     rz --- e
     log --- slog1
     log --- slog2
-    cache --- l2
-    spare --- sp
+    aux --- l2
+    aux --- sp
 
     style root fill:#e0e0e0,stroke:#333
     style m1 fill:#d0e8ff,stroke:#333
     style rz fill:#d0e8ff,stroke:#333
     style log fill:#ffe0d0,stroke:#333
-    style cache fill:#fff0c0,stroke:#333
-    style spare fill:#f0d0ff,stroke:#333
+    style aux fill:#fff0c0,stroke:#333
 ```
+
+Note: on disk, log vdevs are still ordinary vdev-tree nodes (e.g., `disk`/`mirror`) with an `is_log` flag. L2ARC and spares live in auxiliary config lists (`l2cache` and `spares`), not as children in the `vdev_tree`.
 
 ## 1.2 Vdev Labels
 
@@ -102,7 +100,7 @@ Offset:  0        256K       512K                             N-512K    N-256K  
          +--------+--------+------ ··· ------+--------+--------+
 ```
 
-Where `N` is the total device size in bytes. L0 and L1 are the front labels; L2 and L3 are the back labels. Under normal conditions, all four labels on a given vdev are identical.
+Where `N` is the total device size in bytes. L0 and L1 are the front labels; L2 and L3 are the back labels. After a full label sync, all four labels on a given vdev are typically identical, but during updates the even/odd labels may legitimately differ.
 
 ### 1.2.2 Transactional Two-Stage Label Update
 
@@ -121,7 +119,7 @@ Each 256 KB vdev label is divided into four sections:
 Offset   Size     Section
 ──────   ──────   ─────────────────────────
 0x00000   8 KB    Blank space
-0x02000   8 KB    Boot block header
+0x02000   8 KB    Boot environment block
 0x04000  112 KB   Name-value pair list (nvlist)
 0x20000  128 KB   Uberblock array
 ──────   ──────
@@ -131,7 +129,7 @@ Offset   Size     Section
 ```
 Label (256 KB)
 +──────────+──────────+────────────────────+─────────────────────+
-| Blank    | Boot Hdr | Name/Value Pairs   | Uberblock Array     |
+| Blank    | Boot Env | Name/Value Pairs   | Uberblock Array     |
 | 8 KB     | 8 KB     | 112 KB             | 128 KB              |
 +──────────+──────────+────────────────────+─────────────────────+
 0          8K         16K                   128K                  256K
@@ -152,8 +150,8 @@ vdev_boot_envblock_t (8192 bytes)
 Offset  Size       Field          Description
 ──────  ─────      ─────          ──────────────────────────────────
 0x000   8 bytes    vbe_version    Format version (see below)
-0x008   8048 bytes vbe_bootenv    Boot environment payload
-0x1F78  136 bytes  vbe_zbt        Embedded checksum (zio_eck_t)
+0x008   8144 bytes vbe_bootenv    Boot environment payload
+0x1FD8  40 bytes   vbe_zbt        Embedded checksum (zio_eck_t)
 ──────  ─────
         8192 bytes total
 ```
@@ -165,7 +163,7 @@ Offset  Size       Field          Description
 
 ### 1.3.3 Name-Value Pair List (112 KB)
 
-The next 112 KB stores a collection of name-value pairs encoded as an XDR nvlist. These pairs describe the vdev and all related vdevs in its top-level subtree.
+The next 112 KB (`vdev_phys_t`) stores a packed XDR nvlist followed by an embedded checksum trailer (`zio_eck_t`). The nvlist itself occupies `VDEV_PHYS_SIZE - sizeof(zio_eck_t)`. These pairs describe the vdev and all related vdevs in its top-level subtree.
 
 The following top-level name-value pairs are present:
 
@@ -206,26 +204,26 @@ The `vdev_tree` entry is a nested nvlist that recursively describes every vdev i
 
 | Type String | Added | Description |
 |-------------|-------|-------------|
-| `"disk"` | v1 | Leaf vdev: block storage device |
-| `"file"` | v1 | Leaf vdev: file-backed storage |
+| `"root"` | v1 | Root of the vdev tree |
 | `"mirror"` | v1 | Interior vdev: mirror (N-way replication) |
 | `"raidz"` | v1 | Interior vdev: RAID-Z (parity-based redundancy) |
+| `"draid"` | feature | Interior vdev: distributed-parity RAID (`feature@draid`) |
 | `"replacing"` | v1 | Interior vdev: temporary mirror used during disk replacement |
-| `"root"` | v1 | Interior vdev: root of the vdev tree |
-| `"spare"` | v3 | Leaf vdev: hot spare device |
-| `"log"` | v7 | Interior vdev: dedicated ZIL log device (SLOG) |
-| `"l2cache"` | v10 | Leaf vdev: L2ARC read cache device |
+| `"spare"` | v3 | Interior vdev: spare wrapper (contains the actual spare leaf) |
+| `"disk"` | v1 | Leaf vdev: block storage device |
+| `"file"` | v1 | Leaf vdev: file-backed storage |
+| `"dspare"` | feature | Distributed spare within a dRAID group (`feature@draid`) |
+| `"indirect"` | feature | Remapped vdev after device removal (`feature@device_removal`) |
 | `"hole"` | v19 | Placeholder for a removed top-level vdev slot |
 | `"missing"` | -- | Placeholder for a device that is not present at import |
-| `"indirect"` | feature | Remapped vdev after device removal (`feature@device_removal`) |
-| `"draid"` | feature | Distributed-parity RAID with integrated spares (`feature@draid`) |
-| `"dspare"` | feature | Distributed spare within a dRAID group (`feature@draid`) |
+
+Note: log devices are flagged via `is_log` in the vdev config rather than using a distinct vdev-tree type string, and L2ARC/spares are stored in auxiliary config lists (not under `vdev_tree`).
 
 ### 1.3.4 The Uberblock Array
 
 The final 128 KB of the label holds an array of uberblocks. The size of each uberblock slot depends on the device's sector size (ashift); see [Section 1.5](#15-ashift-and-uberblock-slot-sizing). With the default 1 KB slot size (ashift <= 10), the array holds 128 slots.
 
-The **active uberblock** is the one with the highest transaction group number (`ub_txg`) and a valid SHA-256 checksum. The active uberblock is never overwritten in place; updates write to a different slot in the array in a round-robin fashion across the pool's vdevs.
+The **active uberblock** is the one with the highest transaction group number (`ub_txg`) and a valid `ub_magic`. If multiple uberblocks share the same `ub_txg`, the one with the latest `ub_timestamp` wins. The active uberblock is never overwritten in place; updates write to a different slot in the array in a round-robin fashion across the pool's vdevs.
 
 > **Source:** `include/sys/uberblock_impl.h`
 
@@ -274,20 +272,20 @@ Offset  Size       Field                Description
 
 **`ub_checkpoint_txg`** (0x0C8, `feature@zpool_checkpoint`): When a pool checkpoint is active, this field stores the transaction group of the checkpoint. The checkpoint preserves the pool's state at this txg, allowing the administrator to rewind the entire pool to this point. Zero when no checkpoint is active.
 
-**`ub_raidz_reflow_info`** (0x0D0, `feature@raidz_expansion`): Encodes the state of a RAIDZ expansion (reflow) operation. The field combines a byte offset and state flag:
+**`ub_raidz_reflow_info`** (0x0D0, `feature@raidz_expansion`): Encodes the state of a RAIDZ expansion (reflow) operation. The field combines a byte offset and a scratch state:
 
 ```
 ub_raidz_reflow_info
-63                                                  1   0
-+──────────────────────────────────────────────────+───+
-|             reflow_offset (bytes)                | S |
-+──────────────────────────────────────────────────+───+
+63        55 54                                   0
++──────────+──────────────────────────────────────+
+|  state   |        reflow_offset (bytes)         |
++──────────+──────────────────────────────────────+
 ```
 
 | Bits | Field | Description |
 |------|-------|-------------|
-| 63:1 | `reflow_offset` | Byte offset up to which data has been reflowed onto the new vdev layout |
-| 0 | `state` | 0 = not in progress, 1 = reflow in progress |
+| 54:0 | `reflow_offset` | Byte offset (in 512-byte units) up to which data has been reflowed |
+| 63:55 | `state` | Scratch state (RRSS_* enum values) |
 
 Fields from `ub_software_version` onward were added after the original 2006 format. Older uberblocks may not contain them; uninitialized fields read as zero.
 
@@ -427,9 +425,9 @@ Multi-Modifier Protection (MMP) prevents a pool from being imported simultaneous
 
 ### Mechanism
 
-When MMP is active, the system periodically writes uberblocks to the pool as a heartbeat signal. Each MMP write updates `ub_mmp_delay` with the time elapsed since the previous MMP write (in nanoseconds). Before importing a pool, the importing system checks the uberblock ring for evidence of recent MMP writes from another host. If such evidence is found, import is refused.
+When MMP is active, the system periodically writes a **copy of the last-synced uberblock** as a heartbeat signal. Each MMP write updates `ub_mmp_delay` with the time elapsed since the previous MMP write (in nanoseconds), along with `ub_mmp_config` and `ub_timestamp`. Before importing a pool, the importing system checks for evidence of recent MMP writes from another host.
 
-The MMP heartbeat writes go to uberblock slots in round-robin order, using `ub_txg = 0` so they are never selected as the active uberblock. These writes serve only as presence indicators.
+MMP heartbeat writes are stored in the **reserved MMP slots** at the end of each label’s uberblock ring. A random label and MMP slot are chosen for each write. Normal uberblock selection ignores these reserved slots, so MMP writes are not considered “active” uberblocks.
 
 ### `ub_mmp_config` Bit Layout
 
@@ -457,10 +455,13 @@ The validity bits handle backward compatibility: older software that wrote `ub_m
 
 ### Import Safety
 
-During pool import, the system waits for a duration derived from the uberblock's MMP fields to confirm that no other host is actively using the pool. The wait duration is:
+During pool import, the system waits for a duration derived from the uberblock’s MMP fields to confirm that no other host is actively using the pool. The logic is:
 
-```
-wait = ub_mmp_delay * zfs_multihost_import_intervals
-```
+- If `ub_mmp_config` is valid **and** `fail_intervals > 0`:  
+  `wait = fail_intervals * multihost_interval * 2` (safety factor).
+- If `ub_mmp_config` is valid **and** `fail_intervals == 0`:  
+  `wait = (multihost_interval + ub_mmp_delay) * zfs_multihost_import_intervals`.
+- If the uberblock predates the recorded `multihost_interval` (older MMP or pre‑MMP):  
+  `wait = (zfs_multihost_interval + ub_mmp_delay) * zfs_multihost_import_intervals` (or just `zfs_multihost_interval * zfs_multihost_import_intervals` if no MMP fields exist).
 
-where `zfs_multihost_import_intervals` defaults to 20. This provides a safety margin of 20x the observed write interval. If the `ub_mmp_config` fields are valid, the configured `Fail Intervals` and `Write Interval` are also considered.
+By default, `zfs_multihost_import_intervals` is 20, providing a conservative safety margin.

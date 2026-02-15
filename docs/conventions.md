@@ -23,7 +23,8 @@ When a pool is imported on a machine with a different byte order, ZFS byte-swaps
 
 Unless otherwise noted:
 
-- **LSIZE**, **PSIZE**, and **ASIZE** in block pointers are stored as the number of 512-byte sectors minus one. To get the byte size: `(stored_value + 1) << 9`.
+- **LSIZE** and **PSIZE** in block pointers are stored as the number of 512-byte sectors minus one. To get the byte size: `(stored_value + 1) << 9`.  
+  **ASIZE** is stored as the number of 512-byte sectors with no bias. To get the byte size: `stored_value << 9`.
 - **Offsets** in DVAs are stored in 512-byte sector units. The physical byte address on a vdev is: `(offset << 9) + 0x400000` (where 0x400000 = 4 MB accounts for the two front labels and boot block).
 - **Block sizes** range from 512 bytes (2^9) to 16 MB (2^24), with 128 KB (2^17) being the traditional maximum record size.
 

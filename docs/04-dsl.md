@@ -207,6 +207,11 @@ With the `extensible_dataset` feature, datasets and DSL directories can store ad
 | `com.delphix:resume_object` | Last received object number | `feature@extensible_dataset` |
 | `com.delphix:resume_offset` | Last received offset | `feature@extensible_dataset` |
 | `com.delphix:resume_bytes` | Bytes received so far | `feature@extensible_dataset` |
+| `com.delphix:resume_largeblockok` | Resumable receive: large blocks were allowed | `feature@extensible_dataset` |
+| `com.delphix:resume_embedok` | Resumable receive: embedded blocks were allowed | `feature@extensible_dataset` |
+| `com.delphix:resume_compressok` | Resumable receive: compressed blocks were allowed | `feature@extensible_dataset` |
+| `com.datto:resume_rawok` | Resumable receive: raw (encrypted) send was allowed | `feature@extensible_dataset` |
+| `com.delphix:resume_redact_book_snaps` | Redaction bookmark snapshot GUID list | `feature@extensible_dataset` |
 
 **DSL directory ZAP fields (`DD_FIELD_*`):**
 
@@ -216,6 +221,7 @@ With the `extensible_dataset` feature, datasets and DSL directories can store ad
 | `com.joyent:snapshot_count` | Number of snapshots | `feature@filesystem_limits` |
 | `com.datto:crypto_key_obj` | Encryption key object number | `feature@encryption` |
 | `com.delphix:livelist` | Livelist object number | `feature@livelist` |
+| `com.ixsystems:snapshots_changed` | Snapshot namespace change tracking | — |
 
 ## 4.6 MOS Object Directory
 
@@ -233,6 +239,8 @@ The MOS object directory (object 1 in the Meta Object Set) is a ZAP object conta
 | `pool_props` | Pool-level properties (ZAP) |
 | `errlog_scrub` | Error log from last scrub |
 | `errlog_last` | Error log from last operation |
+| `error_scrub` | Scrub error counters |
+| `last_scrubbed_txg` | TXG of last completed scrub |
 | `spares` | Spare vdev configuration |
 | `l2cache` | L2ARC cache device configuration |
 | `features_for_read` | ZAP of features required to read the pool |
@@ -242,17 +250,24 @@ The MOS object directory (object 1 in the Meta Object Set) is a ZAP object conta
 | `creation_version` | Pool version at creation time |
 | `scan` | Scrub/resilver scan state |
 | `DDT-%s-%s-%s` | Dedup table (keyed by checksum, type, class) |
+| `DDT-log-%s-%u` | Dedup log (per checksum class) |
 | `DDT-statistics` | Dedup statistics |
+| `DDT-%s` | DDT directory (per checksum class) |
 | `deflate` | Metaslabs deflated (pre-v17 pools) |
 | `tmp_userrefs` | Temporary snapshot references |
 | `bptree_obj` | Block pointer tree for async destroy |
 | `empty_bpobj` | Shared empty block pointer object |
+| `org.illumos:checksum_salt` | Per-pool checksum salt |
 | `com.delphix:vdev_zap_map` | Maps vdev IDs to per-vdev ZAP objects |
 | `com.delphix:removing` | Device removal state |
 | `com.delphix:obsolete_bpobj` | Obsolete block pointers (device removal) |
+| `com.delphix:condensing_indirect` | Indirect vdev condensing state |
 | `com.delphix:zpool_checkpoint` | Pool checkpoint state |
 | `com.delphix:log_spacemap_zap` | Log spacemap ZAP |
 | `com.delphix:deleted_clones` | Pending deleted clones |
+| `com.klarasystems:txg_log_time:minutes` | TXG log time (minutes) |
+| `com.klarasystems:txg_log_time:days` | TXG log time (days) |
+| `com.klarasystems:txg_log_time:months` | TXG log time (months) |
 
 ## 4.7 Bookmarks
 

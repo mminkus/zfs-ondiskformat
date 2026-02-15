@@ -47,7 +47,7 @@ graph TD
 The path from raw storage to user data follows a fixed traversal:
 
 1. **Vdev Labels** (256 KB structures at known positions on each device) contain the pool configuration and an array of uberblocks.
-2. The **Uberblock** with the highest valid transaction group number is the active uberblock. Its `ub_rootbp` field is a block pointer to the Meta Object Set (MOS).
+2. The **Uberblock** with the highest valid transaction group number (`ub_txg`) and a valid `ub_magic` is the active uberblock. If multiple uberblocks share the same `ub_txg`, the one with the latest `ub_timestamp` wins. Its `ub_rootbp` field is a block pointer to the Meta Object Set (MOS).
 3. The **MOS** (type `DMU_OST_META`) contains the object directory at object number 1. The object directory is a ZAP object with entries for `root_dataset`, `config`, and other pool-wide metadata.
 4. The **root_dataset** entry points to the root DSL directory, from which all datasets (filesystems, snapshots, volumes) can be reached.
 5. Each dataset points to an **object set** containing the actual filesystem objects (files, directories, etc.).

@@ -80,7 +80,7 @@ Offset  Size      Field               Description
 
 ## 3.2 Indirection
 
-A dnode has a limited number of block pointers (1-3). With the maximum data block size of 128 KB and 3 block pointers, the largest object representable without indirection is 384 KB (3 x 128 KB).
+A dnode has a limited number of block pointers (1-3). With the legacy maximum data block size of 128 KB and 3 block pointers, the largest object representable without indirection is 384 KB (3 x 128 KB). With `large_blocks` (up to 16 MB data blocks), the direct limit scales up to 48 MB.
 
 To support larger objects, ZFS uses **indirect blocks**. An indirect block is a block filled with block pointers. The number of block pointers per indirect block depends on its size: an indirect block of size `S` holds `S / 128` block pointers (since each `blkptr_t` is 128 bytes). A 128 KB indirect block holds 1024 block pointers.
 
@@ -114,7 +114,7 @@ graph TD
 
 Given a block ID, ZFS can determine which branch of indirect blocks contains the data block by dividing the block ID by the number of block pointers per indirect block at each level. For example, with 1024 pointers per indirect block, level-0 block ID 16360 maps to level-1 block ID 15 (16360 / 1024 = 15, remainder 1000).
 
-ZFS supports up to 6 levels of indirection, enabling objects up to 2^64 bytes.
+ZFS supports up to `DN_MAX_LEVELS` levels of indirection (currently 12). With 128 KB indirect blocks, 6 levels already cover the full 2^64 byte address space; smaller indirect block sizes may require more levels.
 
 ## 3.3 Large Dnodes
 

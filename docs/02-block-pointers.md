@@ -50,7 +50,7 @@ Word   64      56      48      40      32      24      16      8       0
 | Field | Bits | Description |
 |-------|------|-------------|
 | **vdev** | 24 | Virtual device ID |
-| **ASIZE** | 24 | Allocated size (in 512-byte sectors, +1) |
+| **ASIZE** | 24 | Allocated size (in 512-byte sectors, no bias) |
 | **G** | 1 | Gang block indicator |
 | **offset** | 63 | Offset into vdev (in 512-byte sectors) |
 | **B** | 1 | Byte order (0=big-endian, 1=little-endian) |
@@ -105,23 +105,23 @@ Gang blocks are identified by the **G bit** in the DVA:
 | 0 | Normal (non-gang) block |
 | 1 | Gang block |
 
-A gang block is a 512-byte self-checksumming structure (`zio_gbh_phys_t`) containing up to three block pointers plus a block tail with checksum:
+A gang block is a self-checksumming header (`zio_gbh_phys_t`). The header size is at least `SPA_MINBLOCKSIZE` (512 bytes) and can be larger; it contains an array of block pointers followed by a `zio_eck_t` trailer. The number of block pointers is `(size - sizeof(zio_eck_t)) / sizeof(blkptr_t)`.
 
 ```
-Gang Block (512 bytes)
+Gang Block (size = SPA_MINBLOCKSIZE or larger)
 +─────────────────────────────────────────────+
-| blkptr_t  zg_blkptr[SPA_GBH_NBLKPTRS]      |   3 x 128 bytes = 384 bytes
+| blkptr_t  zg_blkptr[N]                    |
 +─────────────────────────────────────────────+
-| uint64_t  zg_filler[]                       |   padding for alignment
+| padding                                     |
 +─────────────────────────────────────────────+
-| zio_block_tail_t  zg_tail                   |   checksum trailer
+| zio_eck_t  zg_eck                           |   checksum trailer
 +─────────────────────────────────────────────+
 ```
 
-The block tail (`zio_block_tail_t`) consists of:
+The checksum trailer (`zio_eck_t`) consists of:
 
-- **`zbt_magic`**: Magic number `0x210da7ab10c7a11` ("zio-data-bloc-tail")
-- **`zbt_cksum`**: A `zio_cksum_t` (four `uint64_t` words) containing the SHA-256 checksum of the gang block
+- **`zec_magic`**: Magic number `0x210da7ab10c7a11` (`ZEC_MAGIC`)
+- **`zec_cksum`**: A `zio_cksum_t` (four `uint64_t` words) containing the gang header checksum
 
 ## 2.4 Checksum
 
@@ -131,7 +131,7 @@ The 256-bit checksum is stored across four 64-bit words: `checksum[0]` through `
 
 If checksumming is disabled (`cksum` = 2, "off"), all four checksum words are zero.
 
-The checksum is always computed over the data the block pointer references. Gang blocks and ZIL blocks are self-checksumming: their checksums are stored in a block tail embedded within the block itself, not in the parent block pointer.
+The checksum is always computed over the data the block pointer references. Gang blocks and ZIL blocks are self-checksumming: their checksums are stored in a `zio_eck_t` trailer embedded within the block itself, not in the parent block pointer.
 
 ## 2.5 Compression
 
@@ -149,7 +149,8 @@ Three size fields describe each block:
 | **PSIZE** | Physical size: the size on disk after compression |
 | **ASIZE** | Allocated size: total space consumed including RAID-Z parity and gang block overhead |
 
-All three are stored as the number of 512-byte sectors **minus one**. To get the byte size: `(stored_value + 1) * 512`.
+LSIZE and PSIZE are stored as the number of 512-byte sectors **minus one**. To get the byte size: `(stored_value + 1) * 512`.  
+ASIZE is stored as the number of 512-byte sectors **with no bias**. To get the byte size: `stored_value * 512`.
 
 When compression is off and no RAID-Z or gang overhead applies, LSIZE = PSIZE = ASIZE.
 
@@ -174,7 +175,7 @@ The 8-bit `type` field identifies what kind of data the block holds. This corres
 
 ## 2.9 Level
 
-The 7-bit `lvl` field indicates the number of levels of indirection between this block pointer and the actual data. Level 0 block pointers point directly to data. Level 1 block pointers point to indirect blocks containing level 0 block pointers, and so on. See [Chapter 3](03-dmu.md) for a detailed description of indirection.
+The 5-bit `lvl` field indicates the number of levels of indirection between this block pointer and the actual data. Level 0 block pointers point directly to data. Level 1 block pointers point to indirect blocks containing level 0 block pointers, and so on. See [Chapter 3](03-dmu.md) for a detailed description of indirection.
 
 ## 2.10 Fill Count
 
