@@ -18,6 +18,9 @@
 | **ZAP** | ZFS Attribute Processor | Module for storing name-value pair attributes in objects |
 | **ZIL** | ZFS Intent Log | Records synchronous operations for replay after crash |
 | **ZIO** | ZFS I/O Pipeline | The I/O scheduling and execution framework |
+| **L2ARC** | Level 2 Adaptive Replacement Cache | Secondary read cache on a dedicated device (SSD) |
+| **MMP** | Multi-Modifier Protection | Heartbeat mechanism preventing simultaneous pool import on multiple hosts |
+| **SLOG** | Separate Log | A dedicated device for ZIL (intent log) writes |
 | **ZPL** | ZFS POSIX Layer | Makes DMU objects appear as a POSIX-compliant filesystem |
 | **ZVOL** | ZFS Volume | A logical block device backed by a ZFS object set |
 
@@ -64,24 +67,40 @@ These constants identify the type of data stored in a dnode. Values are stored i
 
 ## Checksum Algorithms
 
-| Value | Name | Algorithm |
-|-------|------|-----------|
-| 1 | `on` | fletcher2 (default for data) |
-| 2 | `off` | none |
-| 3 | `label` | SHA-256 |
-| 4 | `gang_header` | SHA-256 |
-| 5 | `zilog` | fletcher2 |
-| 6 | `fletcher2` | fletcher2 |
-| 7 | `fletcher4` | fletcher4 |
-| 8 | `SHA-256` | SHA-256 |
+| Value | Name | Algorithm | Added |
+|-------|------|-----------|-------|
+| 1 | `on` | fletcher2 (legacy default) | v1 |
+| 2 | `off` | none | v1 |
+| 3 | `label` | SHA-256 (labels only) | v1 |
+| 4 | `gang_header` | SHA-256 (gang blocks only) | v1 |
+| 5 | `zilog` | fletcher2 (ZIL only) | v1 |
+| 6 | `fletcher2` | fletcher2 | v1 |
+| 7 | `fletcher4` | fletcher4 | v1 |
+| 8 | `SHA-256` | SHA-256 | v1 |
+| 9 | `SHA-512/256` | SHA-512 truncated to 256 bits | feature |
+| 10 | `skein` | Skein-512/256 | feature |
+| 11 | `edonr` | Edon-R/256 | feature |
+| 12 | `blake3` | BLAKE3 | feature |
 
 ## Compression Algorithms
 
-| Value | Name | Algorithm |
-|-------|------|-----------|
-| 1 | `on` | lzjb (legacy default) |
-| 2 | `off` | none |
-| 3 | `lzjb` | lzjb |
+| Value | Name | Algorithm | Added |
+|-------|------|-----------|-------|
+| 1 | `on` | lzjb (legacy default) | v1 |
+| 2 | `off` | none | v1 |
+| 3 | `lzjb` | lzjb | v1 |
+| 5 | `gzip-1` | GZIP level 1 | v5 |
+| 6 | `gzip-2` | GZIP level 2 | v5 |
+| 7 | `gzip-3` | GZIP level 3 | v5 |
+| 8 | `gzip-4` | GZIP level 4 | v5 |
+| 9 | `gzip-5` | GZIP level 5 | v5 |
+| 10 | `gzip-6` | GZIP level 6 | v5 |
+| 11 | `gzip-7` | GZIP level 7 | v5 |
+| 12 | `gzip-8` | GZIP level 8 | v5 |
+| 13 | `gzip-9` | GZIP level 9 | v5 |
+| 14 | `zle` | Zero-Length Encoding | v20 |
+| 15 | `lz4` | LZ4 | feature |
+| 16 | `zstd` | Zstandard | feature |
 
 ## ZIL Transaction Types
 
@@ -123,3 +142,111 @@ These constants identify the type of data stored in a dnode. Values are stored i
 | 251 | `ZAP_LEAF_ARRAY` | Name or value data chunk |
 | 252 | `ZAP_LEAF_ENTRY` | Attribute entry chunk |
 | 253 | `ZAP_LEAF_FREE` | Free chunk |
+
+## Vdev Type Strings
+
+| Type String | Description |
+|-------------|-------------|
+| `"disk"` | Leaf vdev: block storage device |
+| `"file"` | Leaf vdev: file-backed storage |
+| `"mirror"` | Interior vdev: mirror (N-way replication) |
+| `"raidz"` | Interior vdev: RAID-Z (parity-based redundancy) |
+| `"replacing"` | Interior vdev: temporary mirror during disk replacement |
+| `"root"` | Interior vdev: root of the vdev tree |
+| `"spare"` | Leaf vdev: hot spare device |
+| `"log"` | Interior vdev: dedicated ZIL log device (SLOG) |
+| `"l2cache"` | Leaf vdev: L2ARC read cache device |
+| `"hole"` | Placeholder for a removed top-level vdev slot |
+| `"missing"` | Placeholder for a device not present at import |
+| `"indirect"` | Remapped vdev after device removal |
+| `"draid"` | Distributed-parity RAID with integrated spares |
+| `"dspare"` | Distributed spare within a dRAID group |
+
+## Pool Versions
+
+See [Chapter 1, Section 1.6](01-vdevs.md#16-pool-versioning) for full descriptions of each version.
+
+| Version | Key Features |
+|---------|-------------|
+| 1 | Initial ZFS format |
+| 2 | Ditto blocks |
+| 3 | Hot spares, RAID-Z2 |
+| 4 | Pool history |
+| 5 | GZIP compression |
+| 6 | Boot filesystem |
+| 7 | Separate intent log devices (SLOG) |
+| 8 | Delegated administration |
+| 9 | FUID, refquota, refreservation |
+| 10 | L2ARC |
+| 11 | Next clones, origin, DSL scrub |
+| 12 | Snapshot properties |
+| 13 | Used space breakdown |
+| 14 | Passthrough-x |
+| 15 | User/group space accounting |
+| 16 | STMF properties |
+| 17 | RAID-Z3 |
+| 18 | User reference holds |
+| 19 | Hole support |
+| 20 | ZLE compression |
+| 21 | Deduplication |
+| 22 | Received properties |
+| 23 | Slim ZIL |
+| 24 | System attributes (SA) |
+| 25 | Improved scrub/scan |
+| 26 | Directory clones, improved deadlists |
+| 27 | Fast snapshots |
+| 28 | Multiple device replacement (last numbered version) |
+| 5000 | Feature flags system |
+
+## Feature Flags
+
+Feature flags are identified by reverse-DNS GUIDs. See [Chapter 1, Section 1.6](01-vdevs.md#16-pool-versioning) for the feature flag mechanism.
+
+> **Source:** `module/zcommon/zfeature_common.c`
+
+| Feature Name | GUID | Description |
+|-------------|------|-------------|
+| async_destroy | `com.delphix:async_destroy` | Destroy filesystems asynchronously |
+| empty_bpobj | `com.delphix:empty_bpobj` | Snapshots use less space |
+| lz4_compress | `org.illumos:lz4_compress` | LZ4 compression algorithm |
+| multi_vdev_crash_dump | `com.joyent:multi_vdev_crash_dump` | Crash dumps to multiple vdev pools |
+| spacemap_histogram | `com.delphix:spacemap_histogram` | Spacemaps maintain space histograms |
+| enabled_txg | `com.delphix:enabled_txg` | Record txg at which a feature is enabled |
+| hole_birth | `com.delphix:hole_birth` | Retain hole birth txg for more precise send |
+| zpool_checkpoint | `com.delphix:zpool_checkpoint` | Pool state can be checkpointed |
+| spacemap_v2 | `com.delphix:spacemap_v2` | Efficient space maps for large segments |
+| extensible_dataset | `com.delphix:extensible_dataset` | Enhanced dataset functionality |
+| bookmarks | `com.delphix:bookmarks` | `zfs bookmark` command |
+| filesystem_limits | `com.joyent:filesystem_limits` | Filesystem and snapshot limits |
+| embedded_data | `com.delphix:embedded_data` | Embedded-data block pointers |
+| livelist | `com.delphix:livelist` | Improved clone deletion performance |
+| log_spacemap | `com.delphix:log_spacemap` | Log-structured metaslab space maps |
+| large_blocks | `org.open-zfs:large_blocks` | Blocks larger than 128KB |
+| large_dnode | `org.zfsonlinux:large_dnode` | Variable on-disk dnode sizes |
+| sha512 | `org.illumos:sha512` | SHA-512/256 checksum |
+| skein | `org.illumos:skein` | Skein checksum |
+| edonr | `org.illumos:edonr` | Edon-R checksum |
+| redaction_bookmarks | `com.delphix:redaction_bookmarks` | Bookmarks with redaction lists |
+| redacted_datasets | `com.delphix:redacted_datasets` | Redacted datasets from redacted send |
+| bookmark_written | `com.delphix:bookmark_written` | written#\<bookmark\> property |
+| device_removal | `com.delphix:device_removal` | Top-level vdev removal |
+| obsolete_counts | `com.delphix:obsolete_counts` | Reduced memory for removed devices |
+| userobj_accounting | `org.zfsonlinux:userobj_accounting` | User/group object accounting |
+| bookmark_v2 | `com.datto:bookmark_v2` | Larger bookmarks |
+| encryption | `com.datto:encryption` | Dataset-level encryption |
+| project_quota | `org.zfsonlinux:project_quota` | Project-based space/object accounting |
+| allocation_classes | `org.zfsonlinux:allocation_classes` | Separate allocation classes (special vdev) |
+| resilver_defer | `com.datto:resilver_defer` | Defer new resilvers during active resilver |
+| device_rebuild | `org.openzfs:device_rebuild` | Sequential mirror/dRAID device rebuilds |
+| zstd_compress | `org.freebsd:zstd_compress` | Zstandard compression |
+| draid | `org.openzfs:draid` | Distributed spare RAID |
+| zilsaxattr | `org.openzfs:zilsaxattr` | xattr=sa logging in ZIL |
+| head_errlog | `com.delphix:head_errlog` | Per-dataset on-disk error logs |
+| blake3 | `org.openzfs:blake3` | BLAKE3 checksum |
+| block_cloning | `com.fudosecurity:block_cloning` | Block cloning via Block Reference Table |
+| vdev_zaps_v2 | `com.klarasystems:vdev_zaps_v2` | Root vdev ZAP |
+| redaction_list_spill | `com.delphix:redaction_list_spill` | Increased redaction snapshot arguments |
+| raidz_expansion | `org.openzfs:raidz_expansion` | RAIDZ vdev expansion |
+| fast_dedup | `com.klarasystems:fast_dedup` | Advanced deduplication |
+| longname | `org.zfsonlinux:longname` | Filenames up to 1024 bytes |
+| large_microzap | `com.klarasystems:large_microzap` | Microzaps larger than 128KB |
