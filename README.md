@@ -29,6 +29,7 @@ The documentation is organized into chapters covering each layer of the ZFS on-d
 - [Chapter 12: Allocation Classes and Device Removal](docs/12-special-vdevs.md)
 - [Chapter 13: Feature Flags and Compatibility](docs/13-feature-flags.md)
 - [Chapter 14: Deduplication Tables and Block Cloning](docs/14-dedup-and-cloning.md)
+- [Chapter 15: Persistent L2ARC Cache](docs/15-l2arc.md)
 
 ## Status
 
