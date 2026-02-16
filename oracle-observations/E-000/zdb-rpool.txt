@@ -1,0 +1,35 @@
+root@solaris:~# zdb
+rpool:
+    version: 53
+    name: 'rpool'
+    state: 0
+    txg: 4
+    pool_guid: 7744560788790333117
+    old_guid: 0
+    timestamp: 1771224336
+    retention_expiry: 0
+    retention_held_fs: 0
+    hostid: 925919
+    hostname: 'solaris'
+    vdev_children: 1
+    vdev_tree:
+        guid: 7744560788790333117
+        id: 0
+        type: 'root'
+        create_txg: 4
+        children[0]:
+            guid: 15323705199190521733
+            id: 0
+            type: 'disk'
+            path: '/dev/dsk/c1t0d0s1'
+            devid: 'id1,sd@SATA_____QEMU_HARDDISK________________QM00001/b'
+            phys_path: '/pci@0,0/pci1af4,1100@1f,2/disk@0,0:b'
+            whole_disk: 1
+            metaslab_array: 27
+            metaslab_shift: 28
+            ashift: 9
+            asize: 34070331392
+            is_log: 0
+            is_meta: 0
+            create_txg: 4
+root@solaris:~#

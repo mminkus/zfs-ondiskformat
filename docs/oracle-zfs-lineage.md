@@ -24,37 +24,75 @@ evolution points, compared with modern OpenZFS.
 
 Priority is always **observed data first**, then inference.
 
+## A.2.1 Output Formatting Convention
+
+Long command output should be stored in evidence files, not pasted inline in
+full, to keep this appendix readable.
+
+Use this pattern:
+
+- Put raw output in `oracle-observations/E-###/*.txt`
+- In this appendix, keep:
+  - a short summary
+  - key deltas/findings
+  - links to the raw files
+
+Optional:
+
+- Use a short inline excerpt when a specific line is important.
+
 ## A.3 Environment Snapshot (Template)
 
 Fill this section for each test host used in analysis.
 
 | Field | Value |
 |------|-------|
-| OS | `SunOS 5.11 11.4.0.34.0 i86pc i386 i86pc` |
-| Hostname | `<fill>` |
-| `zpool` version output date | `<YYYY-MM-DD>` |
+| OS | `SunOS solaris 5.11 11.4.81.193.1 i86pc i386 i86pc kvm` |
+| Hostname | `solaris` |
+| `zpool` version output date | `2026-02-16` |
 | `zdb` build/version notes | `<fill>` |
 | Pool used for tests | `<fill>` |
 | Test media type | `<file-backed vdev / disk / VM disk>` |
 
 ## A.4 Captured Baseline Output
 
-### A.4.1 `zfs upgrade -v`
+Evidence bundle directory for this baseline:
+
+- `oracle-observations/E-000/`
+
+Raw captures:
+
+- `oracle-observations/E-000/zfs-upgrade-v.txt`
+- `oracle-observations/E-000/zpool-upgrade-v.txt`
+- `oracle-observations/E-000/zdb-help.txt`
+- `oracle-observations/E-000/zdb-rpool.txt`
+- `oracle-observations/E-000/zdb-uberblock-rpool.txt`
+- `oracle-observations/E-000/zdb-M-all-rpool.txt`
+- `oracle-observations/E-000/zpool-get-all-rpool.txt`
+- `oracle-observations/E-000/zfs-get-all-rpool.txt`
+
+Quick highlights:
+
+- Oracle filesystem version line reports up to `zfs` version `8`.
+- Oracle pool version line reports up to `zpool` version `53`.
+- `zdb -M all` output shows Oracle-specific MOS key names and reporting
+  structure that differ from current OpenZFS tooling conventions.
+
+### A.4.1 Inline Excerpt (`zpool upgrade -v`)
 
 ```text
-# paste captured output here
-```
-
-### A.4.2 `zpool upgrade -v`
-
-```text
-# paste captured output here
-```
-
-### A.4.3 Tool Behavior Notes (`zdb`, etc.)
-
-```text
-# paste concise notes and notable command output differences here
+This system is currently running ZFS pool version 53.
+...
+44  Device removal
+45  Lazy deadlists
+46  Compact file metadata for encryption
+47  Property support for ZVOLs
+48  File Retention
+49  Unicode versioning
+50  Raw crypto replication
+51  Retention onexpiry
+52  Clonedir
+53  Maximize space
 ```
 
 ## A.5 Observed Pool Version Track (Oracle)

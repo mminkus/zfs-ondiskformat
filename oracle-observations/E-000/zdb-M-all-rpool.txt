@@ -1,0 +1,369 @@
+root@solaris:~# zdb -M all rpool
+Dataset mos [META], ID 0, cr_txg 4, 792K, 191 objects, key_obj 0
+
+MOS Directory:
+                condense_txg = 0
+                creation_version = 0x35
+                sync_bplist = 0x17
+                config = 0x16
+                deflate = 0x1
+                pool_props = 0x7d
+                root_dataset = 0x2
+                dataset_history = 0x19
+                free_bpobj = 0x9
+                history = 0x18
+                debug_history = 0x1a
+
+Pool properties:
+                bootfs = 0x27
+
+Metaslabs:
+        vdev         0  ms_array         27
+        metaslabs  127  offset                   spacemap          free
+        --------------  -----------------------  ---------------  -------------
+        metaslab     0  offset                0  spacemap     30  free    1.95M
+        metaslab     1  offset       0x10000000  spacemap     72  free        0
+        metaslab     2  offset       0x20000000  spacemap     71  free        0
+        metaslab     3  offset       0x30000000  spacemap     70  free        0
+        metaslab     4  offset       0x40000000  spacemap     69  free       2M
+        metaslab     5  offset       0x50000000  spacemap     73  free       2M
+        metaslab     6  offset       0x60000000  spacemap     79  free        0
+        metaslab     7  offset       0x70000000  spacemap     78  free        0
+        metaslab     8  offset       0x80000000  spacemap     77  free        0
+        metaslab     9  offset       0x90000000  spacemap     76  free    1.99M
+        metaslab    10  offset       0xa0000000  spacemap     80  free       2M
+        metaslab    11  offset       0xb0000000  spacemap     84  free        0
+        metaslab    12  offset       0xc0000000  spacemap     83  free        0
+        metaslab    13  offset       0xd0000000  spacemap     82  free        0
+        metaslab    14  offset       0xe0000000  spacemap     81  free       2M
+        metaslab    15  offset       0xf0000000  spacemap     85  free       2M
+        metaslab    16  offset      0x100000000  spacemap     86  free    1.98M
+        metaslab    17  offset      0x110000000  spacemap     97  free        0
+        metaslab    18  offset      0x120000000  spacemap     96  free        0
+        metaslab    19  offset      0x130000000  spacemap     95  free        0
+        metaslab    20  offset      0x140000000  spacemap     94  free       2M
+        metaslab    21  offset      0x150000000  spacemap     98  free       2M
+        metaslab    22  offset      0x160000000  spacemap    100  free        0
+        metaslab    23  offset      0x170000000  spacemap     99  free        0
+        metaslab    24  offset      0x180000000  spacemap     29  free    27.3M
+        metaslab    25  offset      0x190000000  spacemap    101  free    3.38M
+        metaslab    26  offset      0x1a0000000  spacemap    102  free    4.72M
+        metaslab    27  offset      0x1b0000000  spacemap    103  free    3.23M
+        metaslab    28  offset      0x1c0000000  spacemap    104  free    2.96M
+        metaslab    29  offset      0x1d0000000  spacemap    107  free    2.99M
+        metaslab    30  offset      0x1e0000000  spacemap    108  free    3.17M
+        metaslab    31  offset      0x1f0000000  spacemap    109  free    49.3M
+        metaslab    32  offset      0x200000000  spacemap    110  free     118M
+        metaslab    33  offset      0x210000000  spacemap     75  free     218M
+        metaslab    34  offset      0x220000000  spacemap    117  free     151M
+        metaslab    35  offset      0x230000000  spacemap    126  free     161M
+        metaslab    36  offset      0x240000000  spacemap    133  free     256M
+        metaslab    37  offset      0x250000000  spacemap     41  free     222M
+        metaslab    38  offset      0x260000000  spacemap    160  free     215M
+        metaslab    39  offset      0x270000000  spacemap    161  free     143M
+        metaslab    40  offset      0x280000000  spacemap      0  free     256M
+        metaslab    41  offset      0x290000000  spacemap      0  free     256M
+        metaslab    42  offset      0x2a0000000  spacemap      0  free     256M
+        metaslab    43  offset      0x2b0000000  spacemap      0  free     256M
+        metaslab    44  offset      0x2c0000000  spacemap     93  free     250M
+        metaslab    45  offset      0x2d0000000  spacemap      0  free     256M
+        metaslab    46  offset      0x2e0000000  spacemap      0  free     256M
+        metaslab    47  offset      0x2f0000000  spacemap      0  free     256M
+        metaslab    48  offset      0x300000000  spacemap     28  free     245M
+        metaslab    49  offset      0x310000000  spacemap      0  free     256M
+        metaslab    50  offset      0x320000000  spacemap      0  free     256M
+        metaslab    51  offset      0x330000000  spacemap      0  free     256M
+        metaslab    52  offset      0x340000000  spacemap      0  free     256M
+        metaslab    53  offset      0x350000000  spacemap    106  free     248M
+        metaslab    54  offset      0x360000000  spacemap      0  free     256M
+        metaslab    55  offset      0x370000000  spacemap      0  free     256M
+        metaslab    56  offset      0x380000000  spacemap      0  free     256M
+        metaslab    57  offset      0x390000000  spacemap     74  free     249M
+        metaslab    58  offset      0x3a0000000  spacemap      0  free     256M
+        metaslab    59  offset      0x3b0000000  spacemap      0  free     256M
+        metaslab    60  offset      0x3c0000000  spacemap      0  free     256M
+        metaslab    61  offset      0x3d0000000  spacemap      0  free     256M
+        metaslab    62  offset      0x3e0000000  spacemap      0  free     256M
+        metaslab    63  offset      0x3f0000000  spacemap      0  free     256M
+        metaslab    64  offset      0x400000000  spacemap      0  free     256M
+        metaslab    65  offset      0x410000000  spacemap      0  free     256M
+        metaslab    66  offset      0x420000000  spacemap      0  free     256M
+        metaslab    67  offset      0x430000000  spacemap      0  free     256M
+        metaslab    68  offset      0x440000000  spacemap     92  free     256M
+        metaslab    69  offset      0x450000000  spacemap      0  free     256M
+        metaslab    70  offset      0x460000000  spacemap      0  free     256M
+        metaslab    71  offset      0x470000000  spacemap      0  free     256M
+        metaslab    72  offset      0x480000000  spacemap      0  free     256M
+        metaslab    73  offset      0x490000000  spacemap      0  free     256M
+        metaslab    74  offset      0x4a0000000  spacemap      0  free     256M
+        metaslab    75  offset      0x4b0000000  spacemap      0  free     256M
+        metaslab    76  offset      0x4c0000000  spacemap      0  free     256M
+        metaslab    77  offset      0x4d0000000  spacemap    105  free     256M
+        metaslab    78  offset      0x4e0000000  spacemap      0  free     256M
+        metaslab    79  offset      0x4f0000000  spacemap      0  free     256M
+        metaslab    80  offset      0x500000000  spacemap      0  free     256M
+        metaslab    81  offset      0x510000000  spacemap      0  free     256M
+        metaslab    82  offset      0x520000000  spacemap      0  free     256M
+        metaslab    83  offset      0x530000000  spacemap      0  free     256M
+        metaslab    84  offset      0x540000000  spacemap      0  free     256M
+        metaslab    85  offset      0x550000000  spacemap      0  free     256M
+        metaslab    86  offset      0x560000000  spacemap      0  free     256M
+        metaslab    87  offset      0x570000000  spacemap      0  free     256M
+        metaslab    88  offset      0x580000000  spacemap      0  free     256M
+        metaslab    89  offset      0x590000000  spacemap      0  free     256M
+        metaslab    90  offset      0x5a0000000  spacemap      0  free     256M
+        metaslab    91  offset      0x5b0000000  spacemap      0  free     256M
+        metaslab    92  offset      0x5c0000000  spacemap      0  free     256M
+        metaslab    93  offset      0x5d0000000  spacemap      0  free     256M
+        metaslab    94  offset      0x5e0000000  spacemap      0  free     256M
+        metaslab    95  offset      0x5f0000000  spacemap      0  free     256M
+        metaslab    96  offset      0x600000000  spacemap      0  free     256M
+        metaslab    97  offset      0x610000000  spacemap      0  free     256M
+        metaslab    98  offset      0x620000000  spacemap      0  free     256M
+        metaslab    99  offset      0x630000000  spacemap      0  free     256M
+        metaslab   100  offset      0x640000000  spacemap      0  free     256M
+        metaslab   101  offset      0x650000000  spacemap      0  free     256M
+        metaslab   102  offset      0x660000000  spacemap      0  free     256M
+        metaslab   103  offset      0x670000000  spacemap      0  free     256M
+        metaslab   104  offset      0x680000000  spacemap      0  free     256M
+        metaslab   105  offset      0x690000000  spacemap      0  free     256M
+        metaslab   106  offset      0x6a0000000  spacemap      0  free     256M
+        metaslab   107  offset      0x6b0000000  spacemap      0  free     256M
+        metaslab   108  offset      0x6c0000000  spacemap      0  free     256M
+        metaslab   109  offset      0x6d0000000  spacemap      0  free     256M
+        metaslab   110  offset      0x6e0000000  spacemap      0  free     256M
+        metaslab   111  offset      0x6f0000000  spacemap      0  free     256M
+        metaslab   112  offset      0x700000000  spacemap      0  free     256M
+        metaslab   113  offset      0x710000000  spacemap      0  free     256M
+        metaslab   114  offset      0x720000000  spacemap      0  free     256M
+        metaslab   115  offset      0x730000000  spacemap      0  free     256M
+        metaslab   116  offset      0x740000000  spacemap      0  free     256M
+        metaslab   117  offset      0x750000000  spacemap      0  free     256M
+        metaslab   118  offset      0x760000000  spacemap      0  free     256M
+        metaslab   119  offset      0x770000000  spacemap      0  free     256M
+        metaslab   120  offset      0x780000000  spacemap      0  free     256M
+        metaslab   121  offset      0x790000000  spacemap      0  free     256M
+        metaslab   122  offset      0x7a0000000  spacemap      0  free     256M
+        metaslab   123  offset      0x7b0000000  spacemap      0  free     256M
+        metaslab   124  offset      0x7c0000000  spacemap      0  free     256M
+        metaslab   125  offset      0x7d0000000  spacemap      0  free     256M
+        metaslab   126  offset      0x7e0000000  spacemap      0  free     236M
+
+
+Dirty time logs:
+        rpool [DTL-required]
+            /dev/dsk/c1t0d0s1 [DTL-required]
+
+
+MOS Configuration:
+        version: 53
+        name: 'rpool'
+        state: 0
+        txg: 413
+        pool_guid: 7744560788790333117
+        old_guid: 0
+        timestamp: 1771225984
+        retention_expiry: 0
+        retention_held_fs: 0
+        hostid: 5092532
+        hostname: ''
+        vdev_children: 1
+        vdev_tree:
+            guid: 7744560788790333117
+            id: 0
+            type: 'root'
+            create_txg: 4
+            children[0]:
+                guid: 15323705199190521733
+                id: 0
+                type: 'disk'
+                path: '/dev/dsk/c1t0d0s1'
+                devid: 'id1,sd@SATA_____QEMU_HARDDISK________________QM00001/b'
+                phys_path: '/pci@0,0/pci1af4,1100@1f,2/disk@0,0:b'
+                whole_disk: 1
+                metaslab_array: 27
+                metaslab_shift: 28
+                ashift: 9
+                asize: 34070331392
+                is_log: 0
+                is_meta: 0
+                create_txg: 4
+
+History:
+2026-02-16.06:45:36 [internal debug sync txg:5] 0.056 txg:4 READY gap 0.000, wrote 3661824 bytes in 0.011, freed 0 blocks in 0.000, scan 0.000
+2026-02-16.06:45:36 zpool create -f -B -O compression=on rpool c1t0d0
+2026-02-16.06:45:36 [internal pool create txg:5] pool spa 53; zfs spa 53; zpl 8; uts solaris 5.11 11.4.81.193.1 i86pc
+2026-02-16.06:45:36 [internal property set txg:5] compression=1 dataset = rpool (17)
+2026-02-16.06:45:36 [internal property set txg:6] $share2=3 dataset = rpool (17)
+2026-02-16.06:45:36 [internal create txg:7] dataset = rpool/ROOT (33)
+2026-02-16.06:45:36 [internal property set txg:8] mountpoint=none dataset = rpool/ROOT (33)
+2026-02-16.06:45:36 [internal property set txg:8] canmount=0 dataset = rpool/ROOT (33)
+2026-02-16.06:45:36 [internal create txg:9] dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.06:45:36 [internal property set txg:10] mountpoint=/ dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.06:45:36 [internal property set txg:10] canmount=2 dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.06:45:36 [internal property set txg:11] com.oracle.libbe:be-policy=static dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.06:45:36 [internal create txg:12] dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.06:45:36 [internal property set txg:13] mountpoint=/var dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.06:45:36 [internal property set txg:13] canmount=2 dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.06:45:36 [internal property set txg:14] canmount=2 dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.06:45:36 [internal property set txg:15] canmount=2 dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.06:45:36 [internal unmount txg:16] unmount dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.06:45:36 [internal property set txg:16] org.opensolaris.libbe:uuid=03cc2f16-d0dd-48e4-a952-209bf0b8d377 dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.06:45:36 [internal create txg:17] dataset = rpool/export (50)
+2026-02-16.06:45:36 [internal property set txg:18] mountpoint=/export dataset = rpool/export (50)
+2026-02-16.06:45:36 [internal property set txg:18] canmount=2 dataset = rpool/export (50)
+2026-02-16.06:45:37 [internal property set txg:19] canmount=1 dataset = rpool/export (50)
+2026-02-16.06:45:37 [internal create txg:20] dataset = rpool/export/home (56)
+2026-02-16.06:45:37 [internal property set txg:21] canmount=2 dataset = rpool/export/home (56)
+2026-02-16.06:45:37 [internal property set txg:22] canmount=1 dataset = rpool/export/home (56)
+2026-02-16.06:45:37 [internal create txg:23] dataset = rpool/VARSHARE (61)
+2026-02-16.06:45:37 [internal property set txg:24] canmount=2 dataset = rpool/VARSHARE (61)
+2026-02-16.06:45:37 [internal property set txg:24] setuid=0 dataset = rpool/VARSHARE (61)
+2026-02-16.06:45:37 [internal property set txg:24] exec=0 dataset = rpool/VARSHARE (61)
+2026-02-16.06:45:37 [internal property set txg:24] xattr=0 dataset = rpool/VARSHARE (61)
+2026-02-16.06:45:37 [internal property set txg:24] mountpoint=/var/share dataset = rpool/VARSHARE (61)
+2026-02-16.06:45:37 [internal inherit txg:25] com.oracle.libbe:pool_version= dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.06:45:37 [internal property set txg:26] canmount=2 dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.06:45:37 [internal create txg:27] dataset = rpool/dump (66)
+2026-02-16.06:45:37 [internal property set txg:28] refreservation=4420763648 dataset = rpool/dump (66)
+2026-02-16.06:45:37 [internal refreservation set txg:28] 4420763648 dataset = rpool/dump (66)
+2026-02-16.06:45:37 [internal property set txg:29] autorefreservation=1 dataset = rpool/dump (66)
+2026-02-16.06:45:38 zfs create -p -V 4087.0m rpool/dump
+2026-02-16.06:45:38 [internal property set txg:31] compression=2 dataset = rpool/dump (66)
+2026-02-16.06:45:38 [internal property set txg:31] checksum=2 dataset = rpool/dump (66)
+2026-02-16.06:45:38 [internal property set txg:32] refreservation=4286840832 dataset = rpool/dump (66)
+2026-02-16.06:45:38 [internal refreservation set txg:32] 4286840832 dataset = rpool/dump (66)
+2026-02-16.06:45:38 [internal property set txg:48] dump=1 dataset = rpool/dump (66)
+2026-02-16.06:45:38 [internal create txg:49] dataset = rpool/swap (89)
+2026-02-16.06:45:38 [internal property set txg:50] refreservation=2215378944 dataset = rpool/swap (89)
+2026-02-16.06:45:38 [internal refreservation set txg:50] 2215378944 dataset = rpool/swap (89)
+2026-02-16.06:45:38 [internal property set txg:51] autorefreservation=1 dataset = rpool/swap (89)
+2026-02-16.06:45:38 zfs create -p -V 2048.0m rpool/swap
+2026-02-16.06:45:38 [internal property set txg:53] compression=2 dataset = rpool/swap (89)
+2026-02-16.06:45:38 [internal property set txg:53] checksum=2 dataset = rpool/swap (89)
+2026-02-16.06:45:38 [internal property set txg:54] refreservation=2148270080 dataset = rpool/swap (89)
+2026-02-16.06:45:38 [internal refreservation set txg:54] 2148270080 dataset = rpool/swap (89)
+2026-02-16.06:45:39 [internal property set txg:64] checksum=1 dataset = rpool/swap (89)
+2026-02-16.06:45:39 [internal property set txg:65] swap=1 dataset = rpool/swap (89)
+2026-02-16.06:59:28 [internal snapshot txg:231] dataset = rpool/ROOT/11.4.81.193.1/var@2026-02-16-06:59:28-643 (111)
+2026-02-16.06:59:28 [internal snapshot txg:231] dataset = rpool/ROOT/11.4.81.193.1@2026-02-16-06:59:28-643 (113)
+2026-02-16.06:59:51 [internal destroy txg:239] dataset = rpool/ROOT/11.4.81.193.1/var@2026-02-16-06:59:28-643 (111)
+2026-02-16.06:59:51 [internal destroy txg:239] dataset = rpool/ROOT/11.4.81.193.1@2026-02-16-06:59:28-643 (113)
+2026-02-16.07:03:11 [internal snapshot txg:281] dataset = rpool/ROOT/11.4.81.193.1/var@2026-02-16-07:03:11-213 (119)
+2026-02-16.07:03:11 [internal snapshot txg:281] dataset = rpool/ROOT/11.4.81.193.1@2026-02-16-07:03:11-213 (121)
+2026-02-16.07:03:21 [internal destroy txg:283] dataset = rpool/ROOT/11.4.81.193.1/var@2026-02-16-07:03:11-213 (119)
+2026-02-16.07:03:21 [internal destroy txg:283] dataset = rpool/ROOT/11.4.81.193.1@2026-02-16-07:03:11-213 (121)
+2026-02-16.07:03:27 [internal pool property set txg:286] bootfs 39 rpool
+2026-02-16.07:03:41 [internal unmount txg:291] unmount dataset = rpool/export (50)
+2026-02-16.07:03:41 [internal unmount txg:292] unmount dataset = rpool/VARSHARE (61)
+2026-02-16.07:03:41 [internal snapshot txg:292] dataset = rpool/ROOT/11.4.81.193.1/var@install (127)
+2026-02-16.07:03:41 [internal snapshot txg:292] dataset = rpool/ROOT/11.4.81.193.1@install (129)
+2026-02-16.07:03:41 [internal property set txg:293] com.oracle.libbe:pool_version=53 dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.07:03:41 [internal property set txg:294] com.oracle.libbe:pool_version=53 dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.07:03:41 [internal unmount txg:295] unmount dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.07:03:41 [internal property set txg:295] canmount=2 dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.07:03:46 [internal unmount txg:296] unmount dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.07:12:44 [internal unmount txg:407] unmount dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.07:12:44 [internal unmount txg:407] unmount dataset = rpool (17)
+2026-02-16.07:12:58 [internal pool load txg:410] pool load rpool; active ub txg=409 ts=1771225964 hostid=0xe20df
+2026-02-16.07:13:03 [internal debug sync txg:411] 0.048 txg:410 READY gap 0.000, wrote 0 bytes in 0.021, freed 2 blocks in 0.000, scan 0.000
+2026-02-16.07:13:12 [internal mount failure txg:416] mount of rpool/ROOT/11.4.81.193.1/var on /var failed v_count:2 v_flag:0x101 uap->flags:0x100
+2026-02-16.07:14:20 [internal property set txg:431] com.oracle.libbe:last-boot-time=20260216T071420Z dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.07:14:20 zfs set com.oracle.libbe:last-boot-time=20260216T071420Z rpool/ROOT/11.4.81.193.1
+2026-02-16.07:14:20 [internal create txg:432] dataset = rpool/VARSHARE/tmp (113)
+2026-02-16.07:14:20 [internal property set txg:433] setuid=1 dataset = rpool/VARSHARE/tmp (113)
+2026-02-16.07:14:20 [internal property set txg:433] exec=1 dataset = rpool/VARSHARE/tmp (113)
+2026-02-16.07:14:20 [internal property set txg:433] xattr=1 dataset = rpool/VARSHARE/tmp (113)
+2026-02-16.07:14:20 [internal property set txg:433] mountpoint=/var/tmp dataset = rpool/VARSHARE/tmp (113)
+2026-02-16.07:14:20 zfs create -o setuid=on -o exec=on -o xattr=on -o mountpoint=/var/tmp rpool/VARSHARE/tmp
+2026-02-16.07:14:20 [internal property set txg:434] $share2=3 dataset = rpool/VARSHARE/tmp (113)
+2026-02-16.07:14:21 [internal property set txg:435] canmount=2 dataset = rpool/VARSHARE/tmp (113)
+2026-02-16.07:14:21 zfs set canmount=noauto rpool/VARSHARE/tmp
+2026-02-16.07:14:21 [internal create txg:436] dataset = rpool/VARSHARE/kvol (121)
+2026-02-16.07:14:21 zfs create rpool/VARSHARE/kvol
+2026-02-16.07:14:21 [internal property set txg:437] $share2=3 dataset = rpool/VARSHARE/kvol (121)
+2026-02-16.07:14:21 [internal create txg:438] dataset = rpool/VARSHARE/kvol/kernel_log (137)
+2026-02-16.07:14:21 [internal property set txg:439] refreservation=17563648 dataset = rpool/VARSHARE/kvol/kernel_log (137)
+2026-02-16.07:14:21 [internal refreservation set txg:439] 17563648 dataset = rpool/VARSHARE/kvol/kernel_log (137)
+2026-02-16.07:14:22 [internal property set txg:440] autorefreservation=1 dataset = rpool/VARSHARE/kvol/kernel_log (137)
+2026-02-16.07:14:22 [internal property set txg:442] compression=2 dataset = rpool/VARSHARE/kvol/kernel_log (137)
+2026-02-16.07:14:22 [internal property set txg:442] checksum=2 dataset = rpool/VARSHARE/kvol/kernel_log (137)
+2026-02-16.07:14:22 [internal property set txg:443] refreservation=17039360 dataset = rpool/VARSHARE/kvol/kernel_log (137)
+2026-02-16.07:14:22 [internal refreservation set txg:443] 17039360 dataset = rpool/VARSHARE/kvol/kernel_log (137)
+2026-02-16.07:14:22 [internal create txg:448] dataset = rpool/VARSHARE/kvol/dump_summary (142)
+2026-02-16.07:14:22 [internal property set txg:449] refreservation=1310720 dataset = rpool/VARSHARE/kvol/dump_summary (142)
+2026-02-16.07:14:22 [internal refreservation set txg:449] 1310720 dataset = rpool/VARSHARE/kvol/dump_summary (142)
+2026-02-16.07:14:22 [internal property set txg:450] autorefreservation=1 dataset = rpool/VARSHARE/kvol/dump_summary (142)
+2026-02-16.07:14:22 [internal property set txg:452] compression=2 dataset = rpool/VARSHARE/kvol/dump_summary (142)
+2026-02-16.07:14:22 [internal property set txg:452] checksum=2 dataset = rpool/VARSHARE/kvol/dump_summary (142)
+2026-02-16.07:14:23 [internal property set txg:453] refreservation=1277952 dataset = rpool/VARSHARE/kvol/dump_summary (142)
+2026-02-16.07:14:23 [internal refreservation set txg:453] 1277952 dataset = rpool/VARSHARE/kvol/dump_summary (142)
+2026-02-16.07:14:23 [internal create txg:458] dataset = rpool/VARSHARE/kvol/ereports (147)
+2026-02-16.07:14:23 [internal property set txg:459] refreservation=11075584 dataset = rpool/VARSHARE/kvol/ereports (147)
+2026-02-16.07:14:23 [internal refreservation set txg:459] 11075584 dataset = rpool/VARSHARE/kvol/ereports (147)
+2026-02-16.07:14:23 [internal property set txg:460] autorefreservation=1 dataset = rpool/VARSHARE/kvol/ereports (147)
+2026-02-16.07:14:23 [internal property set txg:462] compression=2 dataset = rpool/VARSHARE/kvol/ereports (147)
+2026-02-16.07:14:23 [internal property set txg:462] checksum=2 dataset = rpool/VARSHARE/kvol/ereports (147)
+2026-02-16.07:14:23 [internal property set txg:463] refreservation=10747904 dataset = rpool/VARSHARE/kvol/ereports (147)
+2026-02-16.07:14:23 [internal refreservation set txg:463] 10747904 dataset = rpool/VARSHARE/kvol/ereports (147)
+2026-02-16.07:14:25 [internal create txg:468] dataset = rpool/VARSHARE/cores (152)
+2026-02-16.07:14:25 zfs create rpool/VARSHARE/cores
+2026-02-16.07:14:25 [internal property set txg:469] $share2=3 dataset = rpool/VARSHARE/cores (152)
+2026-02-16.07:14:25 [internal property set txg:470] compression=15 dataset = rpool/VARSHARE/cores (152)
+2026-02-16.07:14:25 zfs set compression=lz4 rpool/VARSHARE/cores
+2026-02-16.07:14:25 [internal property set txg:471] canmount=2 dataset = rpool/VARSHARE/cores (152)
+2026-02-16.07:14:25 zfs set canmount=noauto rpool/VARSHARE/cores
+2026-02-16.07:14:25 [internal create txg:472] dataset = rpool/VARSHARE/crash (157)
+2026-02-16.07:14:25 zfs create rpool/VARSHARE/crash
+2026-02-16.07:14:25 [internal property set txg:473] $share2=3 dataset = rpool/VARSHARE/crash (157)
+2026-02-16.07:14:26 [internal property set txg:474] compression=15 dataset = rpool/VARSHARE/crash (157)
+2026-02-16.07:14:26 zfs set compression=lz4 rpool/VARSHARE/crash
+2026-02-16.07:14:26 [internal property set txg:475] canmount=2 dataset = rpool/VARSHARE/crash (157)
+2026-02-16.07:14:31 zfs set canmount=noauto rpool/VARSHARE/crash
+2026-02-16.07:14:41 [internal property set txg:480] dump=1 dataset = rpool/dump (66)
+2026-02-16.07:14:59 [internal create txg:485] dataset = rpool/export/home/martin (165)
+2026-02-16.07:15:00 zfs create rpool/export/home/martin
+2026-02-16.07:15:00 [internal property set txg:486] $share2=3 dataset = rpool/export/home/martin (165)
+2026-02-16.07:15:01 [internal unmount txg:488] unmount dataset = rpool/export/home/martin (165)
+2026-02-16.07:15:02 [internal unmount txg:489] unmount dataset = rpool/export/home (56)
+2026-02-16.07:15:02 [internal property set txg:489] $share2=3 dataset = rpool/export/home (56)
+2026-02-16.07:15:07 zfs unmount rpool/export
+2026-02-16.07:15:07 [internal unmount txg:490] unmount dataset = rpool/export (50)
+2026-02-16.07:15:14 [internal create txg:496] dataset = rpool/VARSHARE/pkg (170)
+2026-02-16.07:15:14 [internal property set txg:496] checksum=1 dataset = rpool/swap (89)
+2026-02-16.07:15:15 [internal property set txg:497] $share2=3 dataset = rpool/VARSHARE/pkg (170)
+2026-02-16.07:15:15 [internal create txg:498] dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:16 [internal create txg:499] dataset = rpool/VARSHARE/sstore (181)
+2026-02-16.07:15:16 [internal property set txg:499] $share2=3 dataset = rpool/ROOT/11.4.81.193.1 (39)
+2026-02-16.07:15:17 zfs create -p rpool/VARSHARE/pkg/repositories
+2026-02-16.07:15:17 [internal property set txg:500] $share2=3 dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:17 [internal property set txg:500] compression=15 dataset = rpool/VARSHARE/sstore (181)
+2026-02-16.07:15:17 [internal property set txg:500] mountpoint=/var/share/sstore/repo dataset = rpool/VARSHARE/sstore (181)
+2026-02-16.07:15:17 [internal property set txg:500] canmount=1 dataset = rpool/VARSHARE/sstore (181)
+2026-02-16.07:15:17 [internal property set txg:501] $share2=3 dataset = rpool/ROOT/11.4.81.193.1/var (45)
+2026-02-16.07:15:17 [internal property set txg:501] canmount=2 dataset = rpool/VARSHARE/pkg (170)
+2026-02-16.07:15:17 [internal property set txg:501] $share2=3 dataset = rpool/VARSHARE/sstore (181)
+2026-02-16.07:15:18 zfs set canmount=noauto rpool/VARSHARE/pkg
+2026-02-16.07:15:18 [internal property set txg:502] canmount=2 dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:18 [internal property set txg:502] $share2=3 dataset = rpool/VARSHARE (61)
+2026-02-16.07:15:18 zfs set canmount=noauto rpool/VARSHARE/pkg/repositories
+2026-02-16.07:15:18 [internal property set txg:503] $share2=3 dataset = rpool/export (50)
+2026-02-16.07:15:18 [internal permission update txg:504] ul$97 create dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:18 [internal permission update txg:504] ul$97 mount dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:18 [internal permission update txg:504] ul$97 canmount dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:18 [internal permission update txg:504] ul$97 snapshot dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:18 [internal permission update txg:504] ud$97 create dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:18 [internal permission update txg:504] ud$97 mount dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:18 [internal permission update txg:504] ud$97 canmount dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:18 [internal permission update txg:504] ud$97 snapshot dataset = rpool/VARSHARE/pkg/repositories (176)
+2026-02-16.07:15:21 zfs allow pkg5srv create,mount,canmount,snapshot rpool/VARSHARE/pkg/repositories
+2026-02-16.07:15:27 [internal create txg:508] dataset = rpool/VARSHARE/zones (189)
+2026-02-16.07:15:28 [internal property set txg:509] xattr=1 dataset = rpool/VARSHARE/zones (189)
+2026-02-16.07:15:28 [internal property set txg:509] setuid=1 dataset = rpool/VARSHARE/zones (189)
+2026-02-16.07:15:28 [internal property set txg:509] exec=1 dataset = rpool/VARSHARE/zones (189)
+2026-02-16.07:15:28 [internal property set txg:509] mountpoint=/system/zones dataset = rpool/VARSHARE/zones (189)
+(non-existent)
+
+Deduplication table:
+        XTREE DDT object not found
+root@solaris:~#

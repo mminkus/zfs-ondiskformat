@@ -1,0 +1,13 @@
+root@solaris:~# zdb -u rpool
+
+Uberblock:
+        magic = 0x0000000000bab10c
+        version = 53
+        txg = 602
+        guid_sum = 4621521914271303234
+        pool_guid = 7744560788790333117
+        hostid = 0x4db4b4
+        scnt = 423
+        timestamp = 1771226593 date = Mon Feb 16 07:23:13 UTC 2026
+
+root@solaris:~#

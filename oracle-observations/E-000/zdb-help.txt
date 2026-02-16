@@ -1,0 +1,72 @@
+root@solaris:~# zdb -?
+Usage: zdb [-bfhsVDTzaAFIePrXwptMxUWZ] [-M <what>] <poolname> [<object>...]
+       zdb [-div] <dataset> [<object>...]
+       zdb [-div] <poolname> dataset <dsobj> [<object>...]
+       zdb -m [-L] <poolname> [<vdev> [<metaslab>...]]
+       zdb -R <poolname> <vdev>:<offset>:<size>[:<flags>]
+       zdb -S <poolname>
+       zdb -g <poolname> [min_txg [max_txg]]
+       zdb -l [-cu] <device>
+       zdb -C
+
+    Dataset name must include at least one separator character '/' or '@'.
+    Dataset may also be specified by using  the <poolname> followed by
+    "dataset" and its object ID.
+    Root dataset can be dumped by specifying option '-d' explicitly.
+    If dataset name is specified, only that dataset is dumped.
+    If object numbers are specified, only those objects are dumped.
+
+    Options to control amount of output:
+        -b block statistics
+        -c checksum all metadata (twice for all data) blocks
+        -d dataset(s)
+        -h pool history
+        -i intent logs
+        -l dump label contents
+        -m metaslabs
+        -r dump datasets recursively
+        -s report stats on zdb's I/O
+        -u uberblock
+        -v verbose (applies to all others)
+        -z report zombies only
+        -V verify DDT xtree block data
+        -C config (or cachefile if alone)
+        -D dedup statistics
+        -M <what> -- dump MOS contents; <what> is 'raw_config' or 'all' or
+           a comma-separated list of one or more of:
+             objset, dir, pool_props, metaslab, sync_bplist, dtl, config,
+             spares, l2cache, history, errlog_scrub, errlog_last,
+             bpmap-vdev, bpmap_defer_obj, dtl-scan, ddt2,
+             retained_datasets, held_datasets, bpmap_free_obj
+        -S simulate dedup to measure effect
+        -L disable leak tracking (do not load spacemaps and deferred frees)
+        -R read and display block from a device (zdb -R for usage)
+        -? displays usage
+
+    Below options are intended for use with other options (except -l):
+        -A ignore assertions (-A), enable panic recovery (-AA) or both (-AAA)
+        -a flip 'import l2arc cache' flag; by default
+           import if DEBUG is enabled and don't import if not
+        -F attempt automatic rewind within safe range of transaction groups
+        -I ignore errors while dumping datasets and objects
+        -T block stat breakdown by txg
+        -U <full path> -- use alternate cachefile; works with -e too
+        -X attempt extreme rewind (does not work with dataset)
+        -W <what> -- specify wrapping key; <what> is a comma-separated list
+           of one or more field=value pairs:
+             raw:hex:passphrase:salt:file:prompt:encryption:local:txgkey:
+             mackey:
+        -e pool is exported/destroyed/has altroot/not in a default cachefile
+        -f attempt to force import (only works with -e)
+        -p <path> -- use one or more with -e to specify path to vdev dir
+        -P print numbers parsable
+        -q disables checking logs during pool load speeding it up especially
+           on busy pools with lots of datasets; incompatible with leak tracking
+        -t <txg> -- highest txg to use when searching for uberblocks
+        -w <shadow dir> -- dir to save shadow copy of all disk locations
+           accessed during zdb run; use with -bc to create metadata-only
+           copy of all pool disks
+        -x <tunable=value> -- sets a value for a tunable in the emulated kernel
+Specify an option more than once (e.g. -bb) to make only that option verbose.
+Default is to dump everything non-verbosely.
+root@solaris:~#
