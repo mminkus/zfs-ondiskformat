@@ -86,3 +86,4 @@ All source references in this documentation point to files in the OpenZFS source
 - [Chapter 10: Native Encryption](10-encryption.md)
 - [Chapter 11: RAID-Z and dRAID](11-raidz.md)
 - [Chapter 12: Allocation Classes and Device Removal](12-special-vdevs.md)
+- [Chapter 13: Feature Flags and Compatibility](13-feature-flags.md)
