@@ -15,6 +15,7 @@ The documentation is organized into chapters covering each layer of the ZFS on-d
 - [Conventions](docs/conventions.md) -- Notation, byte order, diagram style
 - [Glossary](docs/glossary.md) -- Terms, type enumerations, constants
 - [Introduction](docs/index.md) -- Architecture overview and data traversal
+- [Appendix: Oracle ZFS Lineage Notes](docs/oracle-zfs-lineage.md) -- Evidence-first comparative notes
 - [Chapter 1: Virtual Devices, Labels, and Boot Block](docs/01-vdevs.md)
 - [Chapter 2: Block Pointers and Indirect Blocks](docs/02-block-pointers.md)
 - [Chapter 3: Data Management Unit](docs/03-dmu.md)

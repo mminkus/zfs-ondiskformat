@@ -74,6 +74,7 @@ All source references in this documentation point to files in the OpenZFS source
 
 - [Conventions](conventions.md) -- Notation, byte order, diagram conventions
 - [Glossary](glossary.md) -- Terms, acronyms, type enumerations
+- [Appendix: Oracle ZFS Lineage Notes](oracle-zfs-lineage.md) -- Evidence-first comparative notes
 - [Chapter 1: Virtual Devices, Labels, and Boot Block](01-vdevs.md)
 - [Chapter 2: Block Pointers and Indirect Blocks](02-block-pointers.md)
 - [Chapter 3: Data Management Unit](03-dmu.md)
