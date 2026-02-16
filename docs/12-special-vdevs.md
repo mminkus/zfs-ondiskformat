@@ -121,7 +121,7 @@ Removed vdev mappings shrink over time as blocks are freed or remapped. On-disk 
 - **Per-dataset remap deadlist**: `ds_remap_deadlist` stores remapped blocks
   that are still referenced by older snapshots until snapshot destruction moves
   eligible entries into pool-level obsolete processing.
-- **Pool-wide obsolete bpobj**: `com.delphix:obsolete_bpobj` (`DMU_POOL_OBSOLETE_BPOBJ`) accumulates ranges to be marked obsolete.
+- **Pool-wide obsolete bpobj**: `com.delphix:obsolete_bpobj` (`DMU_POOL_OBSOLETE_BPOBJ`) accumulates block pointers whose indirect mapping entries should be marked obsolete.
 
 If a mapping condense is in progress, the MOS directory has `DMU_POOL_CONDENSING_INDIRECT` (`com.delphix:condensing_indirect`) containing:
 

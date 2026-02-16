@@ -120,7 +120,7 @@ dRAID is a top-level vdev type (`draid`) that combines RAID-Z parity with distri
 | `ZPOOL_CONFIG_DRAID_NSPARES` | uint64 | Distributed spares |
 | `ZPOOL_CONFIG_DRAID_NGROUPS` | uint64 | Groups per permutation |
 
-The number of children is stored in `ZPOOL_CONFIG_CHILDREN`. `VDEV_DRAID_MAXPARITY` is 3.
+Children are listed in the `ZPOOL_CONFIG_CHILDREN` nvlist array (the child count is derived from the array length). `VDEV_DRAID_MAXPARITY` is 3.
 
 ## 11.7 dRAID Mapping and Permutations
 

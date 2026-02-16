@@ -113,7 +113,7 @@ Word 1:
 ```
 
 - Word 0 bits 63-62: prefix `11` (two-word marker)
-- Word 0 bits 23-0: vdev ID (24 bits, `SPA_VDEVBITS`), or `SM_NO_VDEVID` (`1 << 24`) if not applicable
+- Word 0 bits 23-0: vdev ID field (24 bits, `SPA_VDEVBITS`). The in-memory sentinel `SM_NO_VDEVID` (`1 << SPA_VDEVBITS`) indicates "no vdev" in APIs/callbacks, but that sentinel value is not directly representable in this 24-bit on-disk field
 - Word 0 bits 59-24: run length in `sm_shift` units (36 bits)
 - Word 1 bit 63: type -- `0` = `SM_ALLOC`, `1` = `SM_FREE`
 - Word 1 bits 62-0: offset in `sm_shift` units (63 bits)
@@ -136,7 +136,7 @@ Where `record_size` is `max(space_map_block_size, vdev_block_size)`. Empty metas
 When a space map is condensed:
 
 1. The existing space map object is truncated (`space_map_truncate`).
-2. New entries are written representing only the current allocation state -- all allocated regions as `SM_ALLOC` entries and all free regions as `SM_FREE` entries.
+2. A single full-range `SM_ALLOC` entry is written covering the entire metaslab, then free regions are written as `SM_FREE` entries. The result represents the current allocation state.
 3. The `smp_length` and `smp_alloc` fields in `space_map_phys_t` are updated to reflect the new compact size.
 4. The histogram is recalculated.
 
@@ -148,7 +148,7 @@ Relevant feature flags and their on-disk impact:
 
 | Feature | Description | On-Disk Impact |
 |---------|-------------|----------------|
-| `feature@spacemap_histogram` | Maintain free-space histograms | Expands `space_map_phys_t` bonus from 24 to 280 bytes |
+| `feature@spacemap_histogram` | Maintain free-space histograms | Expands `space_map_phys_t` bonus from 24 to 320 bytes |
 | `feature@spacemap_v2` | More efficient encoding for large segments | Enables two-word space map entries |
 | `feature@log_spacemap` | Pool-wide log spacemap | Adds MOS entry `com.delphix:log_spacemap_zap` and per-vdev unflushed txg tracking |
 | `feature@allocation_classes` | Separate allocation classes | Adds per-vdev allocation bias (`org.zfsonlinux:allocation_bias`) |
@@ -167,7 +167,7 @@ A ZAP object mapping `txg -> log spacemap object ID`. Each value is the object I
 Log spacemap entries are always encoded as **two-word entries** (with a vdev ID to identify which top-level vdev each entry belongs to).
 
 **Per-top-vdev ZAP entry** `com.delphix:ms_unflushed_phys_txgs` (`VDEV_TOP_ZAP_MS_UNFLUSHED_PHYS_TXGS`):
-An array stored in each top-level vdev's ZAP object, with one `uint64` per metaslab. Each value is the `ms_unflushed_txg` -- the TXG up to which that metaslab's space map has been flushed. Log spacemap entries older than a metaslab's unflushed txg are ignored during replay for that metaslab.
+Stores the object ID of a `DMU_OTN_UINT64_METADATA` object. That object contains one `metaslab_unflushed_phys_t` entry (a single `uint64`) per metaslab, indexed by metaslab ID. Each value is the `msp_unflushed_txg` -- the TXG up to which that metaslab's space map has been flushed. Log spacemap entries older than a metaslab's unflushed txg are ignored during replay for that metaslab.
 
 ### Lifecycle
 
