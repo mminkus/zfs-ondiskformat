@@ -81,14 +81,15 @@ Each block pointer contains up to three DVAs (dva1, dva2, dva3), allowing up to 
 
 - **vdev**: 24-bit integer uniquely identifying the vdev containing this block.
 - **offset**: 63-bit integer, the offset in 512-byte sectors from the start of the allocatable region of the vdev.
+  Because this is allocatable-region-relative, the first data offset is 0 (not 0x400000).
 
-To compute the physical byte address on the vdev:
+For a concrete leaf device, compute the physical byte address as:
 
 ```
 physical_address = (offset << 9) + 0x400000
 ```
 
-The `0x400000` (4 MB) offset accounts for the two front vdev labels (2 x 256 KB) and the boot block (3.5 MB).
+The `0x400000` (4 MB) term accounts for the two front vdev labels (2 x 256 KB) and the boot block (3.5 MB).
 
 ## 2.2 GRID
 
@@ -149,7 +150,7 @@ Three size fields describe each block:
 | **PSIZE** | Physical size: the size on disk after compression |
 | **ASIZE** | Allocated size: total space consumed including RAID-Z parity and gang block overhead |
 
-LSIZE and PSIZE are stored as the number of 512-byte sectors **minus one**. To get the byte size: `(stored_value + 1) * 512`.  
+LSIZE and PSIZE are stored as the number of 512-byte sectors **minus one**. To get the byte size: `(stored_value + 1) * 512`.
 ASIZE is stored as the number of 512-byte sectors **with no bias**. To get the byte size: `stored_value * 512`.
 
 When compression is off and no RAID-Z or gang overhead applies, LSIZE = PSIZE = ASIZE.

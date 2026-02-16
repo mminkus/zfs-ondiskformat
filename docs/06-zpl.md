@@ -13,7 +13,7 @@ The ZPL on-disk format has its own version number, stored in the master node `VE
 | 1 | `ZPL_VERSION_INITIAL` | Original format: fixed 264-byte `znode_phys_t` bonus buffer |
 | 2 | `ZPL_VERSION_DIRENT_TYPE` | File type field in directory entries (top 4 bits of 64-bit value) |
 | 3 | `ZPL_VERSION_FUID` / `ZPL_VERSION_NORMALIZATION` / `ZPL_VERSION_SYSATTR` | FUIDs for Windows SID mapping; case-insensitive and Unicode-normalized lookups; system attributes |
-| 4 | `ZPL_VERSION_USERSPACE` | User, group, and project space accounting for quotas |
+| 4 | `ZPL_VERSION_USERSPACE` | User/group space accounting and project-ID plumbing (full project quotas require `feature@project_quota`) |
 | 5 | `ZPL_VERSION_SA` | System Attributes (SA) framework replaces fixed `znode_phys_t` with variable-length attribute storage |
 
 All modern filesystems are created at ZPL version 5. Older versions may exist in pools that were created before SA support and have not been upgraded.
@@ -157,7 +157,7 @@ Variable-length attributes are stored in the SA spill block when they do not fit
 
 ### FUID Encoding
 
-When `feature@fuid` is enabled (`ZPL_VERSION_FUID` and `SPA_VERSION_FUID`), UID and GID fields store **FUIDs**. A FUID encodes a domain index and RID:
+When FUID support is in use (`ZPL_VERSION_FUID` on pools at least `SPA_VERSION_FUID`), UID and GID fields may store **FUIDs**. A FUID encodes a domain index and RID:
 
 ```
 FUID_ENCODE(idx, rid) = (idx << 32) | rid
@@ -229,7 +229,7 @@ Both modes can coexist: a file may have some xattrs in the SA and others in the 
 
 ### Project Quotas
 
-ZPL version 4 (`ZPL_VERSION_USERSPACE`) added space accounting per user, group, and project. Project quotas allow grouping unrelated files under a common accounting identifier.
+ZPL version 4 (`ZPL_VERSION_USERSPACE`) added user/group space accounting and project-ID fields. Full project quota/object-quota accounting is enabled by `feature@project_quota` (`org.zfsonlinux:project_quota`).
 
 Each file's project ID is stored in the `ZPL_PROJID` SA attribute (8 bytes, `uint64`). The default project ID is 0 (`ZFS_DEFAULT_PROJID`). Two persistent flags control project behavior:
 

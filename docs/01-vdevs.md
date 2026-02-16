@@ -254,7 +254,7 @@ Offset  Size       Field                Description
 
 **`ub_version`** (0x008): The SPA version number of the on-disk format. Values 1-28 indicate a specific pool version. The value 5000 indicates the feature-flags system (see [Section 1.6](#16-pool-versioning)).
 
-**`ub_txg`** (0x010): The transaction group number of the last successful sync. Must be >= the `txg` value in the label's nvlist for this uberblock to be considered valid.
+**`ub_txg`** (0x010): The transaction group number of the last successful sync. This is the primary ordering key when selecting the newest uberblock. Label/config txg matching is handled separately during import; validity is not defined by a strict `ub_txg >= label txg` rule.
 
 **`ub_guid_sum`** (0x018): The sum of all leaf vdev GUIDs. When a pool is opened, ZFS sums the GUIDs of all discovered leaf vdevs and compares against this value to verify all devices are present.
 
@@ -301,7 +301,7 @@ Offset:  0       256K      512K           4M                  N-512K    N-256K  
          +-------+-------+---------------+---- ··· ----+-------+-------+
 ```
 
-This is why DVA offsets start at 4 MB (`0x400000`): the physical byte address of a block is `(dva_offset << 9) + 0x400000`.
+The allocatable region for normal data begins at 4 MB (`VDEV_LABEL_START_SIZE`). DVA offsets are recorded relative to that allocatable region (so they start at 0). For concrete leaf-vdev I/O, OpenZFS converts to a physical device byte offset by adding 4 MB: `(dva_offset << 9) + 0x400000`.
 
 ## 1.5 Ashift and Uberblock Slot Sizing
 
@@ -457,11 +457,11 @@ The validity bits handle backward compatibility: older software that wrote `ub_m
 
 During pool import, the system waits for a duration derived from the uberblock’s MMP fields to confirm that no other host is actively using the pool. The logic is:
 
-- If `ub_mmp_config` is valid **and** `fail_intervals > 0`:  
+- If `ub_mmp_config` is valid **and** `fail_intervals > 0`:
   `wait = fail_intervals * multihost_interval * 2` (safety factor).
-- If `ub_mmp_config` is valid **and** `fail_intervals == 0`:  
+- If `ub_mmp_config` is valid **and** `fail_intervals == 0`:
   `wait = (multihost_interval + ub_mmp_delay) * zfs_multihost_import_intervals`.
-- If the uberblock predates the recorded `multihost_interval` (older MMP or pre‑MMP):  
+- If the uberblock predates the recorded `multihost_interval` (older MMP or pre‑MMP):
   `wait = (zfs_multihost_interval + ub_mmp_delay) * zfs_multihost_import_intervals` (or just `zfs_multihost_interval * zfs_multihost_import_intervals` if no MMP fields exist).
 
 By default, `zfs_multihost_import_intervals` is 20, providing a conservative safety margin.

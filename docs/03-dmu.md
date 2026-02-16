@@ -88,7 +88,7 @@ Levels of indirection are numbered from the bottom:
 - **Level 0**: Data blocks (actual file/object data)
 - **Level 1**: Indirect blocks containing pointers to level-0 blocks
 - **Level 2**: Indirect blocks containing pointers to level-1 blocks
-- And so on, up to 6 levels maximum
+- And so on, up to `DN_MAX_LEVELS` (currently 12)
 
 ```mermaid
 graph TD
@@ -129,7 +129,7 @@ The original ZFS format uses a fixed 512-byte dnode (`DNODE_SHIFT = 9`). The `la
 | `DNODE_MIN_SLOTS` | 1 | Slots consumed by a 512-byte dnode |
 | `DNODE_MAX_SLOTS` | 32 | Slots consumed by a 16 KB dnode |
 
-A large dnode occupies consecutive slots in the metadnode's dnode array. The `dn_extra_slots` field records how many additional 512-byte slots beyond the first are consumed. A 1024-byte dnode has `dn_extra_slots = 1`; a 16 KB dnode has `dn_extra_slots = 31`. The extra slots are unavailable for other objects and appear as `DMU_OT_NONE` with a special marker.
+A large dnode occupies consecutive slots in the metadnode's dnode array. The `dn_extra_slots` field records how many additional 512-byte slots beyond the first are consumed. A 1024-byte dnode has `dn_extra_slots = 1`; a 16 KB dnode has `dn_extra_slots = 31`. The extra slots are unavailable for other objects; the first slot contains the real dnode and `dn_extra_slots` marks how many following interior slots it consumes.
 
 The primary benefit of large dnodes is a larger bonus buffer:
 

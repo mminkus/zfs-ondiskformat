@@ -115,7 +115,7 @@ Datasets are stored as objects of type `DMU_OT_DSL_DATASET`. The dataset metadat
 
 **`ds_unique_bytes`**: Tracks how much data is unique to a snapshot -- data that has been overwritten or deleted in the active dataset since the snapshot was taken.
 
-**`ds_next_clones_obj`**: A ZAP object (`DMU_OT_DSL_CLONES`) mapping clone names to their DSL directory object numbers. Added in pool version 11 to efficiently enumerate all clones of a snapshot.
+**`ds_next_clones_obj`**: An integer-keyed ZAP object (created as `DMU_OT_NEXT_CLONES` in current OpenZFS) that stores clone dataset object numbers for this snapshot. Added in pool version 11 to efficiently enumerate clones.
 
 **`ds_props_obj`**: A ZAP object storing properties specific to snapshots. Before pool version 12, snapshots could not have properties.
 
@@ -184,7 +184,7 @@ Common properties and their values:
 | `readonly` | Prevent modifications | 0=readwrite (default), 1=readonly |
 | `dnodesize` | Dnode size for new objects | `legacy`, `auto`, `1k`-`16k` |
 | `encryption` | Encryption algorithm | `off`, `aes-256-ccm`, `aes-256-gcm` |
-| `xattr` | Extended attribute handling | `off`, `dir` (default), `sa` |
+| `xattr` | Extended attribute handling | `off`, `dir`, `sa` (`on` alias; modern default) |
 | `special_small_blocks` | Threshold for special vdev | bytes (0 = disabled) |
 
 ## 4.5 Extensible Dataset Fields
@@ -250,7 +250,7 @@ The MOS object directory (object 1 in the Meta Object Set) is a ZAP object conta
 | `creation_version` | Pool version at creation time |
 | `scan` | Scrub/resilver scan state |
 | `DDT-%s-%s-%s` | Dedup table (keyed by checksum, type, class) |
-| `DDT-log-%s-%u` | Dedup log (per checksum class) |
+| `DDT-log-%s-%u` | Dedup log name pattern used inside per-checksum `DDT-%s` directories |
 | `DDT-statistics` | Dedup statistics |
 | `DDT-%s` | DDT directory (per checksum class) |
 | `deflate` | Metaslabs deflated (pre-v17 pools) |
@@ -268,6 +268,8 @@ The MOS object directory (object 1 in the Meta Object Set) is a ZAP object conta
 | `com.klarasystems:txg_log_time:minutes` | TXG log time (minutes) |
 | `com.klarasystems:txg_log_time:days` | TXG log time (days) |
 | `com.klarasystems:txg_log_time:months` | TXG log time (months) |
+
+Note: `DDT-log-%s-%u` objects are looked up in each checksum class's `DDT-%s` directory object, not as direct entries in the top-level MOS object directory.
 
 ## 4.7 Bookmarks
 
@@ -329,4 +331,4 @@ The deadlist's data blocks contain a ZAP object that maps minimum transaction gr
 
 A **livelist** is the inverse of a deadlist: it tracks blocks that are unique to a clone (allocated after the clone was created). When a clone is destroyed, the livelist allows ZFS to free only the clone-specific blocks without walking the entire dataset, significantly improving clone deletion performance.
 
-Livelists are stored as a ZAP object pointed to by the `com.delphix:livelist` extensible directory field. They use the same `dsl_deadlist_phys_t` structure as deadlists.
+Livelists are stored as deadlist-format objects referenced by the `com.delphix:livelist` (`DD_FIELD_LIVELIST`) extensible directory field. In memory they are opened through `dsl_deadlist_open()`, and on disk they use the same deadlist machinery (`dsl_deadlist_phys_t` bonus plus mintxg->bpobj mapping) as deadlists.

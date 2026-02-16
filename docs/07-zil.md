@@ -82,12 +82,12 @@ Slim layout:
 
 `zc_eck` is an **embedded checksum** (`zio_eck_t`) that contains a magic value and a 256-bit checksum. For ZIL blocks, the embedded checksum is used to validate the **log block sequence number** against the block pointer checksum words.
 
-Sequence numbers are stored in the block pointer checksum words:
+ZIL chain verifier words are stored in the block pointer checksum fields:
 
 | Index | Meaning |
 |-------|---------|
-| `ZIL_ZC_GUID_0` | Pool GUID word 0 |
-| `ZIL_ZC_GUID_1` | Pool GUID word 1 |
+| `ZIL_ZC_GUID_0` | Random chain verifier word 0 (historical name) |
+| `ZIL_ZC_GUID_1` | Random chain verifier word 1 (historical name) |
 | `ZIL_ZC_OBJSET` | Objset ID |
 | `ZIL_ZC_SEQ` | Log block sequence number |
 

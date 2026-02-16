@@ -49,7 +49,7 @@ ZVOL sizing rules enforced by the on-disk format and property validation:
 
 - `volsize` must be **non-zero** and a **multiple of volblocksize**.
 - `volblocksize` must be a **power of two** between `SPA_MINBLOCKSIZE` (512 B) and `SPA_MAXBLOCKSIZE`.
-- Sizes above `SPA_OLD_MAXBLOCKSIZE` (128 KiB) require `feature@large_blocks` and are limited by the `zfs_max_recordsize` tunable (default 1 MiB).
+- Sizes above `SPA_OLD_MAXBLOCKSIZE` (128 KiB) require `feature@large_blocks` and are limited by the `zfs_max_recordsize` tunable (default 16 MiB on non-ILP32, 1 MiB on ILP32).
 - `volblocksize` is a **one-time** property (`PROP_ONETIME`), set at creation and not changeable afterward.
 - On 32-bit platforms, the maximum `volsize` is limited by `SPEC_MAXOFFSET_T`.
 
