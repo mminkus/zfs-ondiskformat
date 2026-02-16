@@ -30,6 +30,7 @@ The documentation is organized into chapters covering each layer of the ZFS on-d
 - [Chapter 13: Feature Flags and Compatibility](docs/13-feature-flags.md)
 - [Chapter 14: Deduplication Tables and Block Cloning](docs/14-dedup-and-cloning.md)
 - [Chapter 15: Persistent L2ARC Cache](docs/15-l2arc.md)
+- [Chapter 16: Pool Operations State](docs/16-pool-state.md)
 
 ## Status
 
