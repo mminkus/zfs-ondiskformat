@@ -34,7 +34,12 @@ The documentation is organized into chapters covering each layer of the ZFS on-d
 
 ## Status
 
-Phase 1 (initial documentation of the on-disk format) is complete. Phase 2 (modernization with post-2006 OpenZFS features: encryption, dRAID, block cloning, feature flags, etc.) is in progress.
+Phase 1 (initial documentation of the on-disk format) is complete.
+Phase 2 (modernization with post-2006 OpenZFS features: encryption, dRAID, block cloning, feature flags, etc.) is also complete.
+Phase 3 (new chapters covering modern OpenZFS on-disk topics beyond the original 2006 specification) is also complete.
+
+The project is currently in maintenance mode.
+Future Phase 4 work is planned as advanced OpenZFS deep dives, such as send/receive stream format details, MOS object-directory reference material, `zdb` verification guidance, and feature-activation behavior mapping.
 
 ## Resources
 
